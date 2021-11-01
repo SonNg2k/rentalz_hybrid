@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "444781486395",
+    "project_id": "gw-mobile-app-dev",
+    "storage_bucket": "gw-mobile-app-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444781486395:android:7fa0044913f5f35bea971e",
+        "android_client_info": {
+          "package_name": "com.sonxuannguyen.rentalz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "444781486395-87imtimp1t3nn8mvkf5cg1i2glipnujk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXh35ZChijFdX33_UogUp2CpQ-Z5VSAGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "444781486395-87imtimp1t3nn8mvkf5cg1i2glipnujk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "444781486395-41l5ui7c89gm22pa8oafpj5qaokr59p2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sonxuannguyen.rentalz"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
