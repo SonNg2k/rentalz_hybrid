@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'app_state/navigation_service.dart';
+import 'navigation_service.dart';
+import 'screens/apartment_list/apartment_list_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'theme.dart';
 
@@ -37,14 +38,12 @@ class _AppState extends State<App> {
     /// This is only called once after the widget is mounted.
     WidgetsBinding.instance!.addPostFrameCallback(
       (_) => FirebaseAuth.instance.authStateChanges().listen((User? user) {
-        // NavigationService.navigatorKey.currentState!
-        //     .popUntil((route) => route.isFirst);
-        // if (user == null)
-        //   NavigationService.navigatorKey.currentState!
-        //       .pushReplacementNamed(LoginScreen.routeName);
-        // else
-        //   NavigationService.navigatorKey.currentState!
-        //       .pushReplacementNamed(ExploreScreen.routeName);
+        NavigationService.popAllRoutesExceptFirst();
+        if (user == null) {
+          NavigationService.pushNewPage(const LoginScreen());
+        } else {
+          NavigationService.pushNewPage(const ApartmentListScreen());
+        }
       }),
     );
     super.initState();

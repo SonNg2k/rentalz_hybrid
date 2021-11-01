@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 ThemeData theme() {
   return ThemeData(
-    primarySwatch: Colors.blue, // MaterialColor, different shades of a color
+    primarySwatch:
+        Colors.deepPurple, // MaterialColor, different shades of a color
     primaryColor: Colors.black, // one of the shades in the primarySwatch
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Colors.deepPurpleAccent,
+      splashColor: Colors.deepPurpleAccent[700],
+    ),
     appBarTheme: _appBarTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );
