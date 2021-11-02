@@ -1,8 +1,19 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:open_mail_app/open_mail_app.dart';
+import 'package:rentalz/alert_service.dart';
+import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/services/auth_service/login_with_facebook.service.dart';
 import 'package:rentalz/services/auth_service/login_with_google.service.dart';
+import 'package:rentalz/services/auth_service/send_sign_in_link_to_email.service.dart';
+import 'package:rentalz/utils/check_if_email_is_valid.dart';
 import 'package:rentalz/widgets/or_divider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'send_auth_link_and_verify_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -44,10 +55,13 @@ class _Body extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 8),
             Image.asset(
               "assets/images/login.png",
               width: size.width * 0.4,
             ),
+            const SizedBox(height: 8),
+            const EmailLinkLoginSection(),
             const SizedBox(height: 8),
             const OrDivider(),
             ElevatedButton.icon(
@@ -64,7 +78,7 @@ class _Body extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
-              onPressed: () => loginWithFacebook(context),
+              onPressed: () => loginWithFacebook(),
               style: ElevatedButton.styleFrom(primary: Colors.blue),
               icon: SvgPicture.asset(
                 'assets/icons/facebook_icon.svg',
@@ -92,6 +106,73 @@ class _EmailLinkLoginSectionState extends State<EmailLinkLoginSection> {
 
   bool _isEmpty = true;
 
+  Widget get _iosEmailLinkLoginBtn {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(primary: Colors.blueGrey[700]!),
+      onPressed: _isEmpty
+          ? null
+          : () {
+              final email = _emailInpController.text;
+              final emailErr = checkIfEmailIsValid(email);
+              if (emailErr != null) {
+                return AlertService.showEphemeralSnackBar(emailErr);
+              }
+              NavigationService.pushNewPage(
+                  SendAuthLinkAndVerifyScreen(email: email));
+            },
+      child: const Text('Next'),
+    );
+  }
+
+  Widget get _androidEmailLinkLoginBtn {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.insert_link),
+      style: ElevatedButton.styleFrom(primary: Colors.blueGrey[700]!),
+      onPressed: _isEmpty
+          ? null
+          : () {
+              final email = _emailInpController.text;
+              final emailErr = checkIfEmailIsValid(email);
+              if (emailErr != null) {
+                return AlertService.showEphemeralSnackBar(emailErr);
+              }
+
+              sendSignInLinkToEmail(email).catchError((e) {
+                debugPrint(e);
+                AlertService.showEphemeralSnackBar('Sending email failed');
+              }).then((_) {
+                SharedPreferences.getInstance().then(
+                  (prefs) => prefs.setString('emailToAuthViaLink', email),
+                );
+                showDialog(
+                  context: context,
+                  builder: (_) {
+                    return CupertinoAlertDialog(
+                      title: Text('An email has been sent to $email'),
+                      content: const Text(
+                          'Please tap the link that we sent to your email to sign in.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            OpenMailApp.openMailApp();
+                          },
+                          child: Text(
+                            'Okay',
+                            style: TextStyle(color: Colors.blueGrey[700]!),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
+              });
+            },
+      label: const Text('Sign in with email link'),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -103,6 +184,7 @@ class _EmailLinkLoginSectionState extends State<EmailLinkLoginSection> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Theme(
           data: Theme.of(context).copyWith(
@@ -126,20 +208,8 @@ class _EmailLinkLoginSectionState extends State<EmailLinkLoginSection> {
           ),
         ),
         const SizedBox(height: 8),
-        // ElevatedButton(
-        //   style: ElevatedButton.styleFrom(primary: Colors.blueGrey[700]!),
-        //   onPressed: _isEmpty
-        //       ? null
-        //       : () {
-        //           final email = _emailInpController.text;
-        //           final emailErr = checkIfEmailIsValid(email);
-        //           if (emailErr != null)
-        //             return showCustomSnackBar(context, emailErr);
-        //           pushNewPage<void>(
-        //               context, SendAuthLinkAndVerifyScreen(email: email));
-        //         },
-        //   child: const Text('Next'),
-        // ),
+        if (Platform.isIOS) _iosEmailLinkLoginBtn,
+        if (Platform.isAndroid) _androidEmailLinkLoginBtn
       ],
     );
   }

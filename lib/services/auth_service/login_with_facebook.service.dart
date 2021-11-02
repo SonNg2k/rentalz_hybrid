@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:rentalz/navigation_service.dart';
 
-Future<UserCredential?> loginWithFacebook(BuildContext context) async {
+Future<UserCredential?> loginWithFacebook() async {
   // by default we request the email and the public profile...
   final LoginResult result = await FacebookAuth.instance.login();
   final AccessToken? accessToken = result.accessToken;
@@ -11,16 +12,18 @@ Future<UserCredential?> loginWithFacebook(BuildContext context) async {
   final facebookAuthCredential =
       FacebookAuthProvider.credential(accessToken.token);
 
-  await FirebaseAuth.instance
-      .signInWithCredential(facebookAuthCredential)
-      // ignore: invalid_return_type_for_catch_error
-      .catchError((err) => authExceptionHandler(err, context));
+  try {
+    await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  } catch (err) {
+    debugPrint('Failed to login with Facebook');
+    _authExceptionHandler(err as FirebaseAuthException);
+  }
 }
 
-void authExceptionHandler(FirebaseAuthException authErr, BuildContext context) {
+void _authExceptionHandler(FirebaseAuthException authErr) {
   if (authErr.code == 'account-exists-with-different-credential') {
     showDialog(
-      context: context,
+      context: NavigationService.navigatorKey.currentContext!,
       builder: (ctx) {
         return CupertinoAlertDialog(
           title: Text(
@@ -30,7 +33,7 @@ void authExceptionHandler(FirebaseAuthException authErr, BuildContext context) {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(NavigationService.navigatorKey.currentContext!);
                 // pushNewPage(
                 //     context,
                 //     SendAuthLinkAndVerifyScreen(
