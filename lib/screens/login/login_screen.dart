@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:rentalz/services/auth_service/login_with_facebook.service.dart';
 import 'package:rentalz/services/auth_service/login_with_google.service.dart';
 import 'package:rentalz/widgets/or_divider.dart';
 
@@ -63,7 +64,7 @@ class _Body extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => loginWithFacebook(context),
               style: ElevatedButton.styleFrom(primary: Colors.blue),
               icon: SvgPicture.asset(
                 'assets/icons/facebook_icon.svg',
