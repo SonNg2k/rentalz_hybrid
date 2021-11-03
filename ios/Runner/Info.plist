@@ -18,15 +18,17 @@
         <string>$(FLUTTER_BUILD_NAME)</string>
         <key>CFBundleSignature</key>
         <string>????</string>
-        
+
         <!-- 👇 Configure Facebook Login for iOS -->
-        <!-- If you already have CFBundleURLTypes or LSApplicationQueriesSchemes keys in your Info.plist, you should merge their values, instead of adding a duplicate key -->
+        <!-- If you already have CFBundleURLTypes or LSApplicationQueriesSchemes keys in your
+            Info.plist, you should merge their values, instead of adding a duplicate key -->
         <key>CFBundleURLTypes</key>
         <array>
             <dict>
                 <key>CFBundleTypeRole</key>
                 <string>Editor</string>
-                <!-- If you have implement another providers (Like Google) in your app you should merge their values in here -->
+                <!-- If you have implement another providers (Like Google) in your app you should
+                    merge their values in here -->
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>fb928659957763543</string>
@@ -41,9 +43,16 @@
         <string>5bb1ba8107ff318d58e73d61e9a7fe80</string>
         <key>FacebookDisplayName</key>
         <string>RentalZ</string>
-        <!-- Any of the Facebook dialogs (e.g., Login, Share, App Invites, etc.) can perform an app switch to Facebook apps with the schemes below -->
+        <!-- Any of the Facebook dialogs (e.g., Login, Share, App Invites, etc.) can perform an
+            app switch to Facebook apps with the schemes below -->
         <key>LSApplicationQueriesSchemes</key>
         <array>
+            <!-- Add any URL schemes passed to canLaunch from the package:url_launcher -->
+            <string>https</string>
+            <!-- Note: URL schemes are only supported if there are apps installed on the device
+                that can support them. For example, iOS simulators don't have a default email
+                or phone apps installed, so can't open tel: or mailto: links. -->
+
             <string>fbapi</string>
             <string>fbapi20130214</string>
             <string>fbapi20130410</string>
@@ -61,15 +70,15 @@
             <string>fbshareextension</string>
         </array>
         <!-- 👆 End of the Facebook Login for iOS Section -->
-        
+
         <key>CFBundleVersion</key>
         <string>$(FLUTTER_BUILD_NUMBER)</string>
         <key>LSRequiresIPhoneOS</key>
-        <true/>
+        <true />
         <key>NSAppTransportSecurity</key>
         <dict>
             <key>NSAllowsLocalNetworking</key>
-            <true/>
+            <true />
         </dict>
         <key>UILaunchStoryboardName</key>
         <string>LaunchScreen</string>
@@ -89,6 +98,6 @@
             <string>UIInterfaceOrientationLandscapeRight</string>
         </array>
         <key>UIViewControllerBasedStatusBarAppearance</key>
-        <false/>
+        <false />
     </dict>
 </plist>
