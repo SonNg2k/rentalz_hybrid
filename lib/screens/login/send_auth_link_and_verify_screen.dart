@@ -78,12 +78,24 @@ class _SendAuthLinkAndVerifyScreenState
                     'The link is not valid');
               }
 
-              await verifyEmailLinkAndLogin(
+              final userSignedInWithEmailLink = await verifyEmailLinkAndLogin(
                 _authLinkInpController.text,
                 onAuthLinkInvalid: () =>
                     AlertService.showEphemeralSnackBar('The link is not valid'),
               );
               _authLinkInpController.clear();
+
+              /// Link the user who is logged in with email auth link to
+              /// the Facebook OAuth account...
+              final authCredentialToLink = widget.authCredentialToLink;
+              if (userSignedInWithEmailLink == null ||
+                  authCredentialToLink == null) return;
+              await userSignedInWithEmailLink
+                  .linkWithCredential(authCredentialToLink);
+              AlertService.showPersistentSnackBar(
+                  'You can now use this Facebook account to login, it is successfully linked to this email.');
+              debugPrint(
+                  'Facebook account is successfully linked to the logged user');
             },
       label: const Text('Sign in with email link'),
     );
