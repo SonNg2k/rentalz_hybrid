@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:rentalz/alert_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<User?> verifyEmailLinkAndLogin(String authLinkSentToEmail) async {
+Future<User?> verifyEmailLinkAndLogin(
+  String authLinkSentToEmail, {
+  void Function()? onAuthLinkInvalid,
+}) async {
   final auth = FirebaseAuth.instance;
-  if (!auth.isSignInWithEmailLink(authLinkSentToEmail)) return null;
+  if (!auth.isSignInWithEmailLink(authLinkSentToEmail)) {
+    if (onAuthLinkInvalid != null) onAuthLinkInvalid();
+    return null;
+  }
 
   /// Retrieve the email from wherever you stored it.
   final prefs = await SharedPreferences.getInstance();
