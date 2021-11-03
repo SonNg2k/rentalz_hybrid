@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 /// ephemeral one, which might quickly get removed when Navigator.popUntil()
 /// or Navigator.pop(context) is called.
 class NavigationService {
+  /// Making the constructor private to hide this class from the IntelliSense
+  /// suggesstions. Constructors of abstract classes are still shown;
+  /// therefore, this is not an alternative solution.
+  NavigationService._();
+
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static void popAllRoutesExceptFirst() =>
