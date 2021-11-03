@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'alert_service.dart';
 import 'navigation_service.dart';
 import 'screens/apartment_list/apartment_list_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -41,9 +45,7 @@ class _AppState extends State<App> {
     FirebaseDynamicLinks.instance.onLink(
       onSuccess: (PendingDynamicLinkData? dynamicLink) async {
         final deepLink = dynamicLink?.link;
-        if (deepLink != null) {
-          verifyEmailLinkAndLogin(deepLink.toString());
-        }
+        _handleEmailLinkLogin(deepLink);
       },
       onError: (OnLinkErrorException e) async {
         debugPrint('onLinkError');
@@ -55,9 +57,7 @@ class _AppState extends State<App> {
     /// return null.
     final data = await FirebaseDynamicLinks.instance.getInitialLink();
     final deepLink = data?.link;
-    if (deepLink != null) {
-      verifyEmailLinkAndLogin(deepLink.toString());
-    }
+    _handleEmailLinkLogin(deepLink);
   }
 
   @override
@@ -91,4 +91,30 @@ class _AppState extends State<App> {
       home: const LoginScreen(),
     );
   }
+}
+
+void _handleEmailLinkLogin(Uri? deepLink) async {
+  if (deepLink == null) return;
+  final userSignedInWithEmailLink =
+      await verifyEmailLinkAndLogin(deepLink.toString());
+  if (userSignedInWithEmailLink == null) return;
+
+  /// Link the user who is logged in with email auth link to
+  /// the Facebook OAuth account...
+  final prefs = await SharedPreferences.getInstance();
+  final authCredentialString = prefs.getString('authCredentialToLink');
+  if (authCredentialString == null) return;
+
+  /// When the user failed to login with their Facebook account due to
+  /// duplicate email, the Facebook auth credential is saved to local storage.
+  final authCredentialJson = jsonDecode(authCredentialString);
+  final authCredentialToLink = AuthCredential(
+    providerId: authCredentialJson['providerId'],
+    signInMethod: authCredentialJson['signInMethod'],
+    token: authCredentialJson['token'],
+  );
+  await userSignedInWithEmailLink.linkWithCredential(authCredentialToLink);
+  AlertService.showPersistentSnackBar(
+      'You can now use this Facebook account to login, it is successfully linked to this email.');
+  debugPrint('Facebook account is successfully linked to the logged user');
 }
