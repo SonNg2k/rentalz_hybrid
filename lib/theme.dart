@@ -5,9 +5,8 @@ ThemeData theme() {
     primarySwatch:
         Colors.deepPurple, // MaterialColor, different shades of a color
     primaryColor: Colors.black, // one of the shades in the primarySwatch
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Colors.deepPurpleAccent,
-      splashColor: Colors.deepPurpleAccent[700],
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Colors.white,
     ),
     appBarTheme: _appBarTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,

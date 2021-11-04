@@ -56,7 +56,7 @@ void _authExceptionHandler(FirebaseAuthException authErr) {
                 ));
               }
 
-              /// Dynamic Links work perfectly on Android...
+              /// Dynamic Links work perfectly fine on Android...
               if (Platform.isAndroid) {
                 sendSignInLinkToEmail(accountEmail).catchError((e) {
                   debugPrint(e);
