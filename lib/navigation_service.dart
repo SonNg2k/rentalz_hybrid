@@ -16,6 +16,10 @@ class NavigationService {
       NavigationService.navigatorKey.currentState!
           .popUntil((route) => route.isFirst);
 
+  static Future<T?> pushReplacementPage<T extends Object?>(Widget page) =>
+      NavigationService.navigatorKey.currentState!
+          .pushReplacement(MaterialPageRoute<T>(builder: (_) => page));
+
   static Future<T?> pushNewPage<T extends Object?>(Widget page) =>
       NavigationService.navigatorKey.currentState!
           .push(MaterialPageRoute<T>(builder: (_) => page));

@@ -71,9 +71,9 @@ class _AppState extends State<App> {
         FirebaseAuth.instance.authStateChanges().listen((User? user) {
           NavigationService.popAllRoutesExceptFirst();
           if (user == null) {
-            NavigationService.pushNewPage(const LoginScreen());
+            NavigationService.pushReplacementPage(const LoginScreen());
           } else {
-            NavigationService.pushNewPage(const ApartmentListScreen());
+            NavigationService.pushReplacementPage(const ApartmentListScreen());
           }
         });
       },
