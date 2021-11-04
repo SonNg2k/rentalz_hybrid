@@ -1,3 +1,6 @@
+/// My code and ideas about this flow menu are based on the following links:
+/// https://api.flutter.dev/flutter/widgets/Flow-class.html
+/// https://www.youtube.com/watch?v=NG6pvXpnIso&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=109
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,7 @@ class _FlowMenuState extends State<FlowMenu>
         context: context,
         builder: (_) => CupertinoActionSheet(
           message: const Text(
-              "Your data will be saved. Can't wait to have you back!"),
+              "All of your data will be saved. Can't wait to have you back!"),
           actions: [
             CupertinoActionSheetAction(
               isDestructiveAction: true,
@@ -118,11 +121,11 @@ class _FlowMenuState extends State<FlowMenu>
   }
 }
 
-/// Controls the visual presentation of the children in a flow layout.
+/// "Controls the visual presentation of the children in a flow layout.
 /// For optimal performance, construct the FlowDelegate with an Animation that
 /// ticks whenever the delegate wishes to change the transformation matrices
 /// for the children and avoid rebuilding the Flow widget itself every
-/// animation frame.
+/// animation frame".
 class _FlowMenuDelegate extends FlowDelegate {
   _FlowMenuDelegate({required this.menuAnimation})
       : super(repaint: menuAnimation);
@@ -137,8 +140,10 @@ class _FlowMenuDelegate extends FlowDelegate {
   void paintChildren(FlowPaintingContext context) {
     /// This feels like a stack that uses matrices instead of Positioned
     /// widgets. But that's not where Flow shines, it can interact with the
-    /// animation's value. The position of items in the Stack never changes,
-    /// however, the items in a Flow can be repositioned efficiently by simply
+    /// animation's value.
+    ///
+    /// The position of items in the Stack never changes. On the contrary,
+    /// the items in a Flow can be repositioned efficiently by simply
     /// repainting the flow.
     ///
     /// The index within the list of Flow's children.
