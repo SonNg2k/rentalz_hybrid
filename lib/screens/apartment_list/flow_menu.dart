@@ -96,19 +96,19 @@ class _FlowMenuState extends State<FlowMenu>
     return Flow(
       delegate: _FlowMenuDelegate(menuAnimation: menuAnimation),
       children: [
-        flowMenuButton(const Icon(
+        flowMenuButton(Icon(
           Icons.close,
-          color: Colors.deepPurpleAccent,
+          color: Theme.of(context).colorScheme.secondary,
         )),
-        flowMenuButton(const Icon(
+        flowMenuButton(Icon(
           Icons.add_business_outlined,
-          color: Colors.deepPurpleAccent,
+          color: Theme.of(context).colorScheme.secondary,
         )),
         if (isOpened) flowMenuLogoutBtn,
         if (!isOpened)
-          flowMenuButton(const Icon(
+          flowMenuButton(Icon(
             Icons.menu,
-            color: Colors.deepPurpleAccent,
+            color: Theme.of(context).colorScheme.secondary,
           ))
       ],
     );

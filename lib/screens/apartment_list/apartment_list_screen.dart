@@ -49,7 +49,8 @@ class _SearchFilterDrawerState extends State<_SearchFilterDrawer> {
       child: ListView(
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(color: Colors.deepPurpleAccent),
+            decoration:
+                BoxDecoration(color: Theme.of(context).colorScheme.secondary),
             child: Text(
               'Search Filter',
               style: Theme.of(context)
