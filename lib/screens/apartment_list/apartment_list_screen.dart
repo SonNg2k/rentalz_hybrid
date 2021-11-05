@@ -94,6 +94,7 @@ class _SearchSectionState extends State<_SearchSection> {
       /// The button below is a placeholder when the FSAP is closed and will
       /// be replaced by a search text field when the FSAP is opened.
       title: TextButton(
+        style: TextButton.styleFrom(backgroundColor: Colors.white),
         onPressed: () => fsabController.open(),
         child: const SizedBox(
           width: 260,
