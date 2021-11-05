@@ -8,9 +8,9 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:open_mail_app/open_mail_app.dart';
 import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/navigation_service.dart';
-import 'package:rentalz/screens/login/send_auth_link_and_verify_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'send_auth_link_and_verify_screen.dart';
 import 'send_sign_in_link_to_email.service.dart';
 
 Future<UserCredential?> loginWithFacebook() async {

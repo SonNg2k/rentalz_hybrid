@@ -3,10 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rentalz/alert_service.dart';
-import 'package:rentalz/services/auth_service/send_sign_in_link_to_email.service.dart';
-import 'package:rentalz/services/auth_service/verify_email_link_and_login.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'send_sign_in_link_to_email.service.dart';
+import 'verify_email_link_and_login.service.dart';
 
 /// This screen is only required for the iOS platform because I cannot afford
 /// the $99/year Apple Developer Account to use Associated Domains (Firebase
