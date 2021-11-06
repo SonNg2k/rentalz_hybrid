@@ -87,25 +87,54 @@ class _BodyState extends State<_Body> {
     );
   }
 
+  TextFormField get _noteFormField {
+    return TextFormField(
+      textInputAction: TextInputAction.newline,
+      keyboardType: TextInputType.multiline,
+      decoration: _inputDecoration.copyWith(
+        labelText: 'Note (optional)',
+        alignLabelWithHint: true,
+      ),
+      minLines: 4, // initial height
+
+      /// If maxLines is set to null, there is no limit to the number of lines.
+      /// The field sizes itself to the inner text and the wrap is enabled.
+      maxLines: null,
+      maxLength: 400,
+    );
+  }
+
+  ElevatedButton get _formSubmitBtn {
+    return ElevatedButton.icon(
+      onPressed: () {},
+      icon: const Icon(Icons.cloud_done_outlined),
+      label: const Text('Submit'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ...[
-                _nameFormField,
-                _reporterNameFormField,
-                _addressFormField,
-                _monthlyRentFormField,
-                _nBedroomsFormField,
-              ].expand((widget) => [widget, const SizedBox(height: 16)])
-            ],
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ...[
+                  _nameFormField,
+                  _reporterNameFormField,
+                  _addressFormField,
+                  _monthlyRentFormField,
+                  _nBedroomsFormField,
+                  _noteFormField,
+                  _formSubmitBtn
+                ].expand((widget) => [widget, const SizedBox(height: 16)])
+              ],
+            ),
           ),
         ),
       ),
