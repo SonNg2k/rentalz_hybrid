@@ -4,6 +4,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rentalz/navigation_service.dart';
+import 'package:rentalz/screens/save_apartment/save_apartment_screen.dart';
 
 class FlowMenu extends StatefulWidget {
   const FlowMenu({Key? key}) : super(key: key);
@@ -100,10 +102,14 @@ class _FlowMenuState extends State<FlowMenu>
           Icons.close,
           color: Theme.of(context).colorScheme.secondary,
         )),
-        flowMenuButton(Icon(
-          Icons.add_business_outlined,
-          color: Theme.of(context).colorScheme.secondary,
-        )),
+        flowMenuButton(
+          Icon(
+            Icons.add_business_outlined,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          onPressed: () =>
+              NavigationService.pushNewPage(const SaveApartmentScreen()),
+        ),
         if (isOpened) flowMenuLogoutBtn,
         if (!isOpened)
           flowMenuButton(Icon(
