@@ -6,14 +6,13 @@ part of 'gmp_place_autocomplete.model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-GoogleMapsPlaceAutocomplete _$GoogleMapsPlaceAutocompleteFromJson(Map json) {
-  return GoogleMapsPlaceAutocomplete(
-    placeId: json['place_id'] as String,
-    description: json['description'] as String,
-    structuredFormatting: StructuredFormatting.fromJson(
-        Map<String, dynamic>.from(json['structured_formatting'] as Map)),
-  );
-}
+GoogleMapsPlaceAutocomplete _$GoogleMapsPlaceAutocompleteFromJson(Map json) =>
+    GoogleMapsPlaceAutocomplete(
+      placeId: json['place_id'] as String,
+      description: json['description'] as String,
+      structuredFormatting: StructuredFormatting.fromJson(
+          Map<String, dynamic>.from(json['structured_formatting'] as Map)),
+    );
 
 Map<String, dynamic> _$GoogleMapsPlaceAutocompleteToJson(
         GoogleMapsPlaceAutocomplete instance) =>
@@ -23,12 +22,11 @@ Map<String, dynamic> _$GoogleMapsPlaceAutocompleteToJson(
       'structured_formatting': instance.structuredFormatting.toJson(),
     };
 
-StructuredFormatting _$StructuredFormattingFromJson(Map json) {
-  return StructuredFormatting(
-    mainText: json['main_text'] as String,
-    secondaryText: json['secondary_text'] as String,
-  );
-}
+StructuredFormatting _$StructuredFormattingFromJson(Map json) =>
+    StructuredFormatting(
+      mainText: json['main_text'] as String,
+      secondaryText: json['secondary_text'] as String,
+    );
 
 Map<String, dynamic> _$StructuredFormattingToJson(
         StructuredFormatting instance) =>

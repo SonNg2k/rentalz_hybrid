@@ -22,6 +22,20 @@ enum ApartmentType {
   lowRise,
 }
 
+extension ComfortLevelExtension on ComfortLevel {
+  String get formattedString {
+    switch (this) {
+      case ComfortLevel.furnished:
+        return "Furnished";
+      case ComfortLevel.semiFurnished:
+        return "Semi-furnished";
+
+      case ComfortLevel.unfurnished:
+        return "Unfurnished";
+    }
+  }
+}
+
 enum ComfortLevel {
   furnished,
   semiFurnished,
@@ -97,7 +111,6 @@ class AddressComponents {
   /// The unique code for the province or city.
   @JsonKey(name: 'level1_id')
   final String level1Id;
-
 
   /// The unique code for the city, district, huyện, or thị xã.
   @JsonKey(name: 'level2_id')
