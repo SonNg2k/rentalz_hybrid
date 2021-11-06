@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rentalz/models/apartment_model/apartment_model.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
@@ -47,12 +49,75 @@ class _BodyState extends State<_Body> {
     );
   }
 
-  ClearableTextFormField get _addressFormField {
+  ClearableTextFormField get _addressRouteFormField {
     return ClearableTextFormField(
       keyboardType: TextInputType.streetAddress,
       decoration: _inputDecoration.copyWith(
-        prefixIcon: const Icon(Icons.place_outlined),
-        labelText: "Apartment address",
+        prefixIcon: const Icon(Icons.directions_outlined),
+        labelText: "Route name",
+      ),
+    );
+  }
+
+  FormField<ComfortLevel> get _comfortLevelFormField {
+    return FormField<ComfortLevel>(
+      builder: (fieldState) => Column(
+        children: [
+          MaterialButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
+
+              /// if the user taps on the mask behind the dialog, then the
+              /// future below completes with the null value.
+              final selectedLevel = await showDialog<ComfortLevel>(
+                context: context,
+                builder: (_) => SimpleDialog(
+                  title: const Text('Select a level of comfort'),
+                  children: [
+                    SimpleDialogOption(
+                      onPressed: () =>
+                          Navigator.pop(context, ComfortLevel.furnished),
+                      child: Text(ComfortLevel.furnished.formattedString),
+                    ),
+                    SimpleDialogOption(
+                      onPressed: () =>
+                          Navigator.pop(context, ComfortLevel.semiFurnished),
+                      child: Text(ComfortLevel.semiFurnished.formattedString),
+                    ),
+                    SimpleDialogOption(
+                      onPressed: () =>
+                          Navigator.pop(context, ComfortLevel.unfurnished),
+                      child: Text(ComfortLevel.unfurnished.formattedString),
+                    )
+                  ],
+                ),
+              );
+              if (selectedLevel != null && selectedLevel != fieldState.value) {
+                fieldState.didChange(selectedLevel);
+              }
+            },
+            child: AbsorbPointer(
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  prefixIcon: const Icon(Icons.category_outlined),
+                  floatingLabelBehavior: (fieldState.value != null)
+                      ? FloatingLabelBehavior.always
+                      : null,
+                  labelText: "Comfort level",
+                  hintText: (fieldState.value != null)
+                      ? fieldState.value!.formattedString
+                      : null,
+                  hintStyle: const TextStyle(color: Color(0xdd000000)),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(''),
+        ],
       ),
     );
   }
@@ -127,7 +192,8 @@ class _BodyState extends State<_Body> {
                 ...[
                   _nameFormField,
                   _reporterNameFormField,
-                  _addressFormField,
+                  _addressRouteFormField,
+                  _comfortLevelFormField,
                   _monthlyRentFormField,
                   _nBedroomsFormField,
                   _noteFormField,
