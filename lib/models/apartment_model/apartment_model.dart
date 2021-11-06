@@ -39,7 +39,7 @@ class ApartmentModel {
     required this.comfortLevel,
     required this.monthlyRent,
     required this.nBedrooms,
-    this.notes,
+    this.note,
     required this.createdAt,
   });
 
@@ -65,7 +65,7 @@ class ApartmentModel {
   @JsonKey(name: 'n_bedrooms')
   final int nBedrooms;
 
-  final String? notes;
+  final String? note;
 
   @JsonKey(
     name: 'created_at',

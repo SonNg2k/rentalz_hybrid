@@ -16,7 +16,7 @@ ApartmentModel _$ApartmentModelFromJson(Map json) => ApartmentModel(
       comfortLevel: $enumDecode(_$ComfortLevelEnumMap, json['comfort_level']),
       monthlyRent: json['monthly_rent'] as int,
       nBedrooms: json['n_bedrooms'] as int,
-      notes: json['notes'] as String?,
+      note: json['note'] as String?,
       createdAt:
           ApartmentModel._fromJsonTimestamp(json['created_at'] as Timestamp),
     );
@@ -31,7 +31,7 @@ Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
       'comfort_level': _$ComfortLevelEnumMap[instance.comfortLevel],
       'monthly_rent': instance.monthlyRent,
       'n_bedrooms': instance.nBedrooms,
-      'notes': instance.notes,
+      'note': instance.note,
       'created_at': ApartmentModel._toJsonTimestamp(instance.createdAt),
     };
 
