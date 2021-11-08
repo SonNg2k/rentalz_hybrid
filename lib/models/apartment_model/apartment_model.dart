@@ -6,6 +6,51 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'apartment_model.g.dart';
 
+extension ApartmentTypeExtension on ApartmentType {
+  String get formattedString {
+    switch (this) {
+      case ApartmentType.studio:
+        return "Studio";
+
+      case ApartmentType.duplex:
+        return "Duplex";
+
+      case ApartmentType.triplex:
+        return "Triplex";
+
+      case ApartmentType.garden:
+        return "Garden";
+
+      case ApartmentType.loft:
+        return "Loft";
+
+      case ApartmentType.penthouse:
+        return "Penthouse";
+
+      case ApartmentType.micro:
+        return "Micro";
+
+      case ApartmentType.walkUp:
+        return "Walk-Up";
+
+      case ApartmentType.basement:
+        return "Basement";
+
+      case ApartmentType.coOp:
+        return "Co-Op";
+
+      case ApartmentType.highRise:
+        return "High-Rise";
+
+      case ApartmentType.midRise:
+        return "Mid-Rise";
+
+      case ApartmentType.lowRise:
+        return "Low-Rise";
+    }
+  }
+}
+
 enum ApartmentType {
   studio,
   duplex,
