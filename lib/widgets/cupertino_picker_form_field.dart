@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// A convenience widget that makes a [CupertinoPicker] into a [FormField].
+/// This should be used if you have more than five select options.
 class CupertinoPickerFormField<T> extends FormField<T> {
   CupertinoPickerFormField({
     // Features
@@ -53,17 +54,12 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                       context: field.context,
                       builder: (_) => _CupertinoPickerModalBottomSheet<T>(
                         key: const ValueKey('_CupertinoPickerModalBottomSheet'),
-                        scrollWheelController: state._scrollWheelController,
+                        pickedValue: field.value,
                         values: values,
                         valueAsString: valueAsString,
                         onSelectedItemChanged: (index) =>
                             field.didChange(values[index]),
                         onBuildComplete: () {
-                          state._scrollWheelController.jumpToItem(
-                            field.value == null
-                                ? 0
-                                : values.indexOf(field.value!),
-                          );
                           if (field.value == null) field.didChange(values[0]);
                         },
                       ),
@@ -104,8 +100,6 @@ class CupertinoPickerFormField<T> extends FormField<T> {
 
 class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
   final TextEditingController _controller = TextEditingController(text: '');
-  final FixedExtentScrollController _scrollWheelController =
-      FixedExtentScrollController(initialItem: 0);
 
   // Retype type of widget from [FormField<T>] to [CupertinoPickerFormField<T>]
   @override
@@ -119,11 +113,6 @@ class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
     super.initState();
     if (widget.initialValue != null) {
       _controller.text = widget.valueAsString(widget.initialValue!);
-    }
-
-    /// Scroll to the initial item in the [CupertinoPicker]
-    if (value != null) {
-      _scrollWheelController.jumpToItem(widget.values.indexOf(value!));
     }
   }
 
@@ -140,7 +129,6 @@ class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
   void dispose() {
     super.dispose();
     _controller.dispose();
-    _scrollWheelController.dispose();
   }
 
   /// Invoked by the clear suffix icon to clear everything in the [FormField]
@@ -155,28 +143,56 @@ class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
       hasText && decoration.suffixIcon == null;
 }
 
-class _CupertinoPickerModalBottomSheet<T> extends StatelessWidget {
+class _CupertinoPickerModalBottomSheet<T> extends StatefulWidget {
   const _CupertinoPickerModalBottomSheet({
     Key? key,
-    required this.scrollWheelController,
+    required this.pickedValue,
     required this.values,
     required this.valueAsString,
     required this.onSelectedItemChanged,
     required this.onBuildComplete,
   }) : super(key: key);
 
-  final FixedExtentScrollController scrollWheelController;
+  final T? pickedValue;
   final List<T> values;
   final String Function(T) valueAsString;
   final void Function(int)? onSelectedItemChanged;
   final void Function() onBuildComplete;
 
   @override
+  State<_CupertinoPickerModalBottomSheet<T>> createState() =>
+      _CupertinoPickerModalBottomSheetState<T>();
+}
+
+class _CupertinoPickerModalBottomSheetState<T>
+    extends State<_CupertinoPickerModalBottomSheet<T>> {
+  final FixedExtentScrollController _scrollWheelController =
+      FixedExtentScrollController(initialItem: 0);
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// Scroll to the initial item in the [CupertinoPicker]
+    if (widget.pickedValue != null) {
+      _scrollWheelController
+          .jumpToItem(widget.values.indexOf(widget.pickedValue!));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     /// The cb below only runs when the modal pops up and the
     /// [ListWheelScrollView] backing [CupertinoPicker] has
     /// finished rendering (build method is complete)
-    WidgetsBinding.instance!.addPostFrameCallback((_) => onBuildComplete());
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _scrollWheelController.jumpToItem(
+        widget.pickedValue == null
+            ? 0
+            : widget.values.indexOf(widget.pickedValue!),
+      );
+      widget.onBuildComplete();
+    });
     return SizedBox(
       height: 250,
       child: Column(
@@ -195,12 +211,12 @@ class _CupertinoPickerModalBottomSheet<T> extends StatelessWidget {
               /// if [itemExtent] is too low, the content for
               /// each item will be squished together
               itemExtent: 32,
-              scrollController: scrollWheelController,
-              onSelectedItemChanged: onSelectedItemChanged,
-              childCount: values.length,
+              scrollController: _scrollWheelController,
+              onSelectedItemChanged: widget.onSelectedItemChanged,
+              childCount: widget.values.length,
               itemBuilder: (_, index) => Center(
                 child: Text(
-                  valueAsString(values[index]),
+                  widget.valueAsString(widget.values[index]),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
                   ),
@@ -211,5 +227,11 @@ class _CupertinoPickerModalBottomSheet<T> extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollWheelController.dispose();
   }
 }
