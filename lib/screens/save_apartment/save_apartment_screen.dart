@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rentalz/models/apartment_model/apartment_model.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
+import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
 class SaveApartmentScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class _BodyState extends State<_Body> {
   ClearableTextFormField get _nameFormField {
     return ClearableTextFormField(
       decoration: _inputDecoration.copyWith(
-        prefixIcon: const Icon(Icons.home_outlined),
+        prefixIcon: const Icon(Icons.info),
         labelText: "Apartment name",
       ),
     );
@@ -59,9 +60,22 @@ class _BodyState extends State<_Body> {
     );
   }
 
+  FormField<ApartmentType> get _apartmentTypeFormField {
+    return CupertinoPickerFormField<ApartmentType>(
+      values: ApartmentType.values,
+      valueAsString: (value) => value.formattedString,
+      decoration: const InputDecoration(
+        filled: true,
+        prefixIcon: Icon(Icons.house),
+        labelText: "Apartment type",
+      ),
+    );
+  }
+
   FormField<ComfortLevel> get _comfortLevelFormField {
     return FormField<ComfortLevel>(
       builder: (fieldState) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MaterialButton(
             padding: const EdgeInsets.all(0),
@@ -100,6 +114,7 @@ class _BodyState extends State<_Body> {
             child: AbsorbPointer(
               child: TextFormField(
                 readOnly: true,
+                showCursor: false,
                 decoration: InputDecoration(
                   filled: true,
                   prefixIcon: const Icon(Icons.category_outlined),
@@ -115,8 +130,13 @@ class _BodyState extends State<_Body> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          const Text(''),
+          Text(
+            fieldState.errorText ?? '',
+            style: Theme.of(context)
+                .textTheme
+                .caption!
+                .copyWith(color: Theme.of(context).errorColor),
+          ),
         ],
       ),
     );
@@ -193,6 +213,7 @@ class _BodyState extends State<_Body> {
                   _nameFormField,
                   _reporterNameFormField,
                   _addressRouteFormField,
+                  _apartmentTypeFormField,
                   _comfortLevelFormField,
                   _monthlyRentFormField,
                   _nBedroomsFormField,
