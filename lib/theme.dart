@@ -19,7 +19,11 @@ ThemeData theme() {
     visualDensity: VisualDensity.adaptivePlatformDensity,
 
     /// The rest of the `ThemeData` class is a composition of many smaller
-    /// themes stiched together (sub themes)...
+    /// themes stiched together (sub themes).
+    /// The default global sub-themes defined by the Flutter team for all
+    /// widgets look good and follow the standard Material Design specs, it is
+    /// strongly advised against globally overriding them here. U should only
+    /// override the themes at the sub-tree level, not at the global level.
     ///
     /// If u want to modify just a portion of your UI, use the
     /// `Theme(data: ThemeData(...), child: Widget())` widget. U can also copy
@@ -32,17 +36,17 @@ ThemeData theme() {
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: Colors.white,
     ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        /// Use the `primary` param to override the default text and icon
-        /// colors for a `TextButton`, as well as its overlay color, with all
-        /// of the standard opacity adjustments for the pressed, focused,
-        /// and hovered states
-        primary: Colors.black,
-        backgroundColor: Colors.grey[200],
-        textStyle: const TextStyle(fontWeight: FontWeight.normal),
-      ),
-    ),
+    // textButtonTheme: TextButtonThemeData(
+    //   style: TextButton.styleFrom(
+    //     /// Use the `primary` param to override the default text and icon
+    //     /// colors for a `TextButton`, as well as its overlay color, with all
+    //     /// of the standard opacity adjustments for the pressed, focused,
+    //     /// and hovered states
+    //     primary: Colors.black,
+    //     backgroundColor: Colors.grey[200],
+    //     textStyle: const TextStyle(fontWeight: FontWeight.normal),
+    //   ),
+    // ),
   );
 }
 

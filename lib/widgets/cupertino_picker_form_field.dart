@@ -100,8 +100,12 @@ class CupertinoPickerFormField<T> extends FormField<T> {
 
 class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
   final TextEditingController _controller = TextEditingController(text: '');
+  // FormField is not scrollable, so don't place the
+  // FixedExtentScrollController in here, this belongs to the
+  // _CupertinoPickerModalBottomSheet
 
-  // Retype type of widget from [FormField<T>] to [CupertinoPickerFormField<T>]
+  // Retype the type of the widget from FormField<T> to
+  // CupertinoPickerFormField<T>
   @override
   CupertinoPickerFormField<T> get widget =>
       super.widget as CupertinoPickerFormField<T>;

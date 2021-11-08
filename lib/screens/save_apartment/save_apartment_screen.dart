@@ -66,7 +66,7 @@ class _BodyState extends State<_Body> {
       valueAsString: (value) => value.formattedString,
       decoration: const InputDecoration(
         filled: true,
-        prefixIcon: Icon(Icons.house),
+        prefixIcon: Icon(Icons.house_outlined),
         labelText: "Apartment type",
       ),
     );
