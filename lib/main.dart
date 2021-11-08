@@ -86,7 +86,7 @@ class _AppState extends State<App> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.navigatorKey,
-      title: 'Easy Wellness',
+      title: 'RentalZ',
       theme: theme(),
       home: const LoginScreen(),
     );
