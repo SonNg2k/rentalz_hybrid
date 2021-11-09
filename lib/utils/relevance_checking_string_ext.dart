@@ -1,8 +1,24 @@
+extension RelevanceCheckingStringExt on String {
+  /// Check for relavance between two strings regardless of whether they have
+  /// diacritics or not.
+  bool isRelevantTo(String string) {
+    final cleanLeftString = _removeDiacriticsFromString(trim());
+    final cleanRightString = _removeDiacriticsFromString(string.trim());
+    final leftRegex =
+        RegExp(r'' + cleanLeftString, caseSensitive: false, unicode: true);
+    final rightRegex =
+        RegExp(r'' + cleanRightString, caseSensitive: false, unicode: true);
+    return cleanLeftString.contains(rightRegex) ||
+        cleanRightString.contains(leftRegex);
+  }
+}
+
 /// Removes common accents and diacritical signs from a string by
 /// replacing them with an equivalent character.
-/// Source: https://stackoverflow.com/a/30845046/8138591
-/// Another package for research: https://pub.dev/packages/tiengviet
-String removeDiacriticsFromString(String str) {
+/// Source: https://stackoverflow.com/a/30845046/8138591.
+///
+/// Another package for research: https://pub.dev/packages/tiengviet.
+String _removeDiacriticsFromString(String string) {
   if (_diacriticsMap.isEmpty) {
     for (int i = 0; i < _defaultDiacriticsRemovalap.length; i++) {
       final letters = _defaultDiacriticsRemovalap[i]['letters'];
@@ -12,7 +28,7 @@ String removeDiacriticsFromString(String str) {
     }
   }
 
-  return str.replaceAllMapped(
+  return string.replaceAllMapped(
       _diacriticsRegExp, (a) => _diacriticsMap[a.group(0)] ?? a.group(0));
 }
 
