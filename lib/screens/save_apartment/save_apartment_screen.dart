@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rentalz/models/apartment_model/apartment_model.dart';
+import 'package:rentalz/models/apartment/apartment_model.dart';
+import 'package:rentalz/navigation_service.dart';
+import 'package:rentalz/screens/save_apartment/input_location_address_screen.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
@@ -50,12 +52,39 @@ class _BodyState extends State<_Body> {
     );
   }
 
-  ClearableTextFormField get _addressRouteFormField {
-    return ClearableTextFormField(
-      keyboardType: TextInputType.streetAddress,
-      decoration: _inputDecoration.copyWith(
-        prefixIcon: const Icon(Icons.directions_outlined),
-        labelText: "Route name",
+  FormField get _locationAddressFormField {
+    return FormField(
+      builder: (fieldState) => Column(
+        children: [
+          MaterialButton(
+            padding: const EdgeInsets.all(0),
+            onPressed: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
+
+              NavigationService.pushNewPage(const InputLocationAddressScreen());
+            },
+            child: const AbsorbPointer(
+              child: TextField(
+                keyboardType: TextInputType.streetAddress,
+                readOnly: true,
+                showCursor: false,
+                decoration: InputDecoration(
+                  filled: true,
+                  prefixIcon: Icon(Icons.map_outlined),
+                  labelText: "Street address",
+                  suffixIcon: Icon(Icons.chevron_right),
+                ),
+              ),
+            ),
+          ),
+          Text(
+            fieldState.errorText ?? '',
+            style: Theme.of(context)
+                .textTheme
+                .caption!
+                .copyWith(color: Theme.of(context).errorColor),
+          ),
+        ],
       ),
     );
   }
@@ -112,7 +141,7 @@ class _BodyState extends State<_Body> {
               }
             },
             child: AbsorbPointer(
-              child: TextFormField(
+              child: TextField(
                 readOnly: true,
                 showCursor: false,
                 decoration: InputDecoration(
@@ -212,7 +241,7 @@ class _BodyState extends State<_Body> {
                 ...[
                   _nameFormField,
                   _reporterNameFormField,
-                  _addressRouteFormField,
+                  _locationAddressFormField,
                   _apartmentTypeFormField,
                   _comfortLevelFormField,
                   _monthlyRentFormField,
