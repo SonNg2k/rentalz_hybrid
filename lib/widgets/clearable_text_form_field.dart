@@ -1,5 +1,5 @@
-/// (Apr 1, 2021) The code for this widget is taken from the commits of the
-/// Flutter repo
+/// (Apr 1, 2021) This widget is mostly inspired by the TextFormField widget
+/// implemented by the Flutter team:
 /// https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/text_form_field.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,67 +107,76 @@ class ClearableTextFormField extends FormField<String> {
 
             return Focus(
               onFocusChange: (hasFocus) => state.setHasFocus(hasFocus),
-              child: TextField(
-                controller: state._effectiveController,
-                focusNode: focusNode,
-                decoration: effectiveDecoration.copyWith(
-                  errorText: field.errorText,
-                  suffixIcon:
-                      ((field.value?.length ?? -1) > 0 && state.hasFocus)
-                          ? IconButton(
-                              icon: resetIcon,
-                              onPressed: () => state.clear(),
-                              color: Theme.of(state.context).hintColor,
-                            )
-                          : null,
+              child: Theme(
+                data: field.hasError
+                    ? ThemeData().copyWith(
+                        colorScheme: ThemeData()
+                            .colorScheme
+                            .copyWith(primary: const Color(0xffd32f2f)),
+                      )
+                    : Theme.of(field.context),
+                child: TextField(
+                  controller: state._effectiveController,
+                  focusNode: focusNode,
+                  decoration: effectiveDecoration.copyWith(
+                    errorText: field.errorText,
+                    suffixIcon:
+                        ((field.value?.length ?? -1) > 0 && state.hasFocus)
+                            ? IconButton(
+                                icon: resetIcon,
+                                onPressed: () => state.clear(),
+                                color: Theme.of(state.context).hintColor,
+                              )
+                            : null,
+                  ),
+                  keyboardType: keyboardType,
+                  textInputAction: textInputAction,
+                  style: style,
+                  strutStyle: strutStyle,
+                  textAlign: textAlign,
+                  textAlignVertical: textAlignVertical,
+                  textDirection: textDirection,
+                  textCapitalization: textCapitalization,
+                  autofocus: autofocus,
+                  toolbarOptions: toolbarOptions,
+                  readOnly: readOnly,
+                  showCursor: showCursor,
+                  obscuringCharacter: obscuringCharacter,
+                  obscureText: obscureText,
+                  autocorrect: autocorrect,
+                  smartDashesType: smartDashesType ??
+                      (obscureText
+                          ? SmartDashesType.disabled
+                          : SmartDashesType.enabled),
+                  smartQuotesType: smartQuotesType ??
+                      (obscureText
+                          ? SmartQuotesType.disabled
+                          : SmartQuotesType.enabled),
+                  enableSuggestions: enableSuggestions,
+                  maxLengthEnforcement: maxLengthEnforcement,
+                  maxLines: maxLines,
+                  minLines: minLines,
+                  expands: expands,
+                  maxLength: maxLength,
+                  onChanged: onChangedHandler,
+                  onTap: onTap,
+                  onEditingComplete: onEditingComplete,
+                  onSubmitted: onFieldSubmitted,
+                  inputFormatters: inputFormatters,
+                  enabled: enabled ?? true,
+                  cursorWidth: cursorWidth,
+                  cursorHeight: cursorHeight,
+                  cursorRadius: cursorRadius,
+                  cursorColor: cursorColor,
+                  scrollPadding: scrollPadding,
+                  scrollPhysics: scrollPhysics,
+                  keyboardAppearance: keyboardAppearance,
+                  enableInteractiveSelection: enableInteractiveSelection,
+                  selectionControls: selectionControls,
+                  buildCounter: buildCounter,
+                  autofillHints: autofillHints,
+                  scrollController: scrollController,
                 ),
-                keyboardType: keyboardType,
-                textInputAction: textInputAction,
-                style: style,
-                strutStyle: strutStyle,
-                textAlign: textAlign,
-                textAlignVertical: textAlignVertical,
-                textDirection: textDirection,
-                textCapitalization: textCapitalization,
-                autofocus: autofocus,
-                toolbarOptions: toolbarOptions,
-                readOnly: readOnly,
-                showCursor: showCursor,
-                obscuringCharacter: obscuringCharacter,
-                obscureText: obscureText,
-                autocorrect: autocorrect,
-                smartDashesType: smartDashesType ??
-                    (obscureText
-                        ? SmartDashesType.disabled
-                        : SmartDashesType.enabled),
-                smartQuotesType: smartQuotesType ??
-                    (obscureText
-                        ? SmartQuotesType.disabled
-                        : SmartQuotesType.enabled),
-                enableSuggestions: enableSuggestions,
-                maxLengthEnforcement: maxLengthEnforcement,
-                maxLines: maxLines,
-                minLines: minLines,
-                expands: expands,
-                maxLength: maxLength,
-                onChanged: onChangedHandler,
-                onTap: onTap,
-                onEditingComplete: onEditingComplete,
-                onSubmitted: onFieldSubmitted,
-                inputFormatters: inputFormatters,
-                enabled: enabled ?? true,
-                cursorWidth: cursorWidth,
-                cursorHeight: cursorHeight,
-                cursorRadius: cursorRadius,
-                cursorColor: cursorColor,
-                scrollPadding: scrollPadding,
-                scrollPhysics: scrollPhysics,
-                keyboardAppearance: keyboardAppearance,
-                enableInteractiveSelection: enableInteractiveSelection,
-                selectionControls: selectionControls,
-                buildCounter: buildCounter,
-                autofillHints: autofillHints,
-                scrollController: scrollController,
               ),
             );
           },
