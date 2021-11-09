@@ -60,7 +60,9 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                         onSelectedItemChanged: (index) =>
                             field.didChange(values[index]),
                         onBuildComplete: () {
-                          if (field.value == null) field.didChange(values[0]);
+                          if (field.value == null && values.isNotEmpty) {
+                            field.didChange(values[0]);
+                          }
                         },
                       ),
                     );
@@ -137,7 +139,7 @@ class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
 
   /// Invoked by the clear suffix icon to clear everything in the [FormField]
   void clear() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       _controller.clear();
       didChange(null);
     });
@@ -189,16 +191,18 @@ class _CupertinoPickerModalBottomSheetState<T>
     /// The cb below only runs when the modal pops up and the
     /// [ListWheelScrollView] backing [CupertinoPicker] has
     /// finished rendering (build method is complete)
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _scrollWheelController.jumpToItem(
-        widget.pickedValue == null
-            ? 0
-            : widget.values.indexOf(widget.pickedValue!),
-      );
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (widget.values.isNotEmpty) {
+        _scrollWheelController.jumpToItem(
+          widget.pickedValue == null
+              ? 0
+              : widget.values.indexOf(widget.pickedValue!),
+        );
+      }
       widget.onBuildComplete();
     });
     return SizedBox(
-      height: 250,
+      height: widget.values.length >= 6 ? 300 : 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
