@@ -16,6 +16,7 @@ class CupertinoPickerFormField<T> extends FormField<T> {
     // Only properties with [this] belong to this class
     required this.values,
     required this.valueAsString,
+    this.onPickerClose,
 
     // From [super]
     Key? key,
@@ -39,8 +40,8 @@ class CupertinoPickerFormField<T> extends FormField<T> {
           enabled: enabled,
           autovalidateMode: autovalidateMode,
           builder: (FormFieldState<T> field) {
-            final _CupertinoPickerFormFieldState<T> state =
-                field as _CupertinoPickerFormFieldState<T>;
+            final CupertinoPickerFormFieldState<T> state =
+                field as CupertinoPickerFormFieldState<T>;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +51,7 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                   onPressed: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
 
-                    showModalBottomSheet<T>(
+                    await showModalBottomSheet<T>(
                       context: field.context,
                       builder: (_) => _CupertinoPickerModalBottomSheet<T>(
                         key: const ValueKey('_CupertinoPickerModalBottomSheet'),
@@ -66,6 +67,7 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                         },
                       ),
                     );
+                    if (onPickerClose != null) onPickerClose(field.value);
                   },
                   child: AbsorbPointer(
                     child: TextField(
@@ -95,12 +97,13 @@ class CupertinoPickerFormField<T> extends FormField<T> {
   // final Icon resetIcon;
   final List<T> values;
   final String Function(T) valueAsString;
+  final void Function(T?)? onPickerClose;
 
   @override
-  FormFieldState<T> createState() => _CupertinoPickerFormFieldState<T>();
+  FormFieldState<T> createState() => CupertinoPickerFormFieldState<T>();
 }
 
-class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
+class CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
   final TextEditingController _controller = TextEditingController(text: '');
   // FormField is not scrollable, so don't place the
   // FixedExtentScrollController in here, this belongs to the
@@ -137,7 +140,7 @@ class _CupertinoPickerFormFieldState<T> extends FormFieldState<T> {
     _controller.dispose();
   }
 
-  /// Invoked by the clear suffix icon to clear everything in the [FormField]
+  /// Clear everything in the [FormField]
   void clear() {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       _controller.clear();
