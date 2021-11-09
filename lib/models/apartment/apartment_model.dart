@@ -157,11 +157,11 @@ class AddressComponents {
   @JsonKey(name: 'level1_id')
   final String level1Id;
 
-  /// The unique code for the city, district, huyện, or thị xã.
+  /// The unique code for the city or district.
   @JsonKey(name: 'level2_id')
   final String level2Id;
 
-  /// The unique code for ward, xã, or thị trấn.
+  /// The unique code for town, ward, or commune.
   @JsonKey(name: 'level3_id')
   final String level3Id;
 
