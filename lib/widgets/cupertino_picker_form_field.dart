@@ -42,6 +42,15 @@ class CupertinoPickerFormField<T> extends FormField<T> {
           builder: (FormFieldState<T> field) {
             final CupertinoPickerFormFieldState<T> state =
                 field as CupertinoPickerFormFieldState<T>;
+            final errorBorder = (decoration.border == null)
+                ? const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xffd32f2f)),
+                  )
+                : decoration.border!.copyWith(
+                    borderSide: const BorderSide(color: Color(0xffd32f2f)),
+                  );
+            final errorDecoration =
+                decoration.copyWith(enabledBorder: errorBorder);
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +83,8 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                       controller: state._controller,
                       enabled: enabled,
                       style: style,
-                      decoration: decoration,
+                      decoration:
+                          (field.hasError) ? errorDecoration : decoration,
 
                       /// Disable content selection of [TextField]
                       readOnly: true,
@@ -82,12 +92,15 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                     ),
                   ),
                 ),
-                Text(
-                  field.errorText ?? '',
-                  style: Theme.of(field.context)
-                      .textTheme
-                      .caption!
-                      .copyWith(color: Theme.of(field.context).errorColor),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12, top: 8),
+                  child: Text(
+                    field.errorText ?? '',
+                    style: Theme.of(field.context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Theme.of(field.context).errorColor),
+                  ),
                 ),
               ],
             );
