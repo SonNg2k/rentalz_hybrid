@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
+import 'package:rentalz/repo/apartment_repo.dart';
 import 'package:rentalz/screens/save_apartment/input_location_address_screen.dart';
 import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
@@ -38,7 +43,12 @@ class _BodyState extends State<_Body> {
 
   String? _name;
   String? _reporterName;
+  LocationAddress? _locationAddress;
   ApartmentType? _apartmentType;
+  ComfortLevel? _comfortLevel;
+  String? _monthlyRent;
+  String? _nBedrooms;
+  String? _note;
 
   ClearableTextFormField get _nameFormField {
     return ClearableTextFormField(
@@ -78,6 +88,7 @@ class _BodyState extends State<_Body> {
         '_locationAddressFormField',
         (value) => DataValidator.required(value),
       ),
+      onSaved: (value) => _locationAddress = value,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,6 +163,7 @@ class _BodyState extends State<_Body> {
         '_apartmentTypeFormField',
         (value) => DataValidator.required(value),
       ),
+      onSaved: (value) => _apartmentType = value,
       focusNode: _formValidationManager
           .getFocusNodeForField('_apartmentTypeFormField'),
       values: ApartmentType.values,
@@ -170,6 +182,7 @@ class _BodyState extends State<_Body> {
         '_comfortLevelFormField',
         (value) => DataValidator.required(value),
       ),
+      onSaved: (value) => _comfortLevel = value,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,8 +201,8 @@ class _BodyState extends State<_Body> {
                   children: [
                     SimpleDialogOption(
                       onPressed: () =>
-                          Navigator.pop(context, ComfortLevel.furnished),
-                      child: Text(ComfortLevel.furnished.formattedString),
+                          Navigator.pop(context, ComfortLevel.unfurnished),
+                      child: Text(ComfortLevel.unfurnished.formattedString),
                     ),
                     SimpleDialogOption(
                       onPressed: () =>
@@ -198,9 +211,9 @@ class _BodyState extends State<_Body> {
                     ),
                     SimpleDialogOption(
                       onPressed: () =>
-                          Navigator.pop(context, ComfortLevel.unfurnished),
-                      child: Text(ComfortLevel.unfurnished.formattedString),
-                    )
+                          Navigator.pop(context, ComfortLevel.furnished),
+                      child: Text(ComfortLevel.furnished.formattedString),
+                    ),
                   ],
                 ),
               );
@@ -264,6 +277,7 @@ class _BodyState extends State<_Body> {
         '_monthlyRentFormField',
         (value) => DataValidator.textRequired(value),
       ),
+      onSaved: (value) => _monthlyRent = value,
       focusNode:
           _formValidationManager.getFocusNodeForField('_monthlyRentFormField'),
       keyboardType: TextInputType.number,
@@ -285,6 +299,7 @@ class _BodyState extends State<_Body> {
         '_nBedroomsFormField',
         (value) => DataValidator.textRequired(value),
       ),
+      onSaved: (value) => _nBedrooms = value,
       focusNode:
           _formValidationManager.getFocusNodeForField('_nBedroomsFormField'),
       keyboardType: TextInputType.number,
@@ -302,6 +317,7 @@ class _BodyState extends State<_Body> {
 
   TextFormField get _noteFormField {
     return TextFormField(
+      onSaved: (value) => _note = value,
       textInputAction: TextInputAction.newline,
       keyboardType: TextInputType.multiline,
       decoration: _inputDecoration.copyWith(
@@ -319,9 +335,34 @@ class _BodyState extends State<_Body> {
 
   ElevatedButton get _formSubmitBtn {
     return ElevatedButton.icon(
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
+          final location = _locationAddress!;
+          final data = ApartmentModel(
+            name: _name!,
+            reporterName: _reporterName!,
+            formattedAddress: location.formattedAddress,
+            addressComponents: AddressComponents(
+              level1Id: location.level1.id,
+              level2Id: location.level2.id,
+              level3Id: location.level3?.id,
+              route: location.route,
+            ),
+            type: _apartmentType!,
+            comfortLevel: _comfortLevel!,
+            monthlyRent: NumberFormat().parse(_monthlyRent!).toInt(),
+            nBedrooms: int.parse(_nBedrooms!),
+            note: _note,
+            creatorId: FirebaseAuth.instance.currentUser!.uid,
+            createdAt: Timestamp.now(),
+          );
+          await ApartmentRepo.add(data).catchError((onErr) {
+            debugPrint(onErr);
+          });
+          AlertService.showEphemeralSnackBar(
+              'Your apartment is added successfully ✅');
+          Navigator.pop(context);
         } else {
           _formValidationManager.erroredFields.first.focusNode.requestFocus();
           Scrollable.ensureVisible(

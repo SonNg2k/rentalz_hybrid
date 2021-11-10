@@ -98,7 +98,7 @@ class ApartmentModel {
     required this.comfortLevel,
     required this.monthlyRent,
     required this.nBedrooms,
-    this.note,
+    required this.note,
     required this.creatorId,
     required this.createdAt,
   });
