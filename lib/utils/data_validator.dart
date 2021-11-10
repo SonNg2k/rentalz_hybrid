@@ -5,10 +5,26 @@ class DataValidator {
     return (value == null) ? (errorText ?? 'This field is required') : null;
   }
 
-  static String? textRequired(String? value, {String? errorText}) {
+  static String? textRequired(String? text, {String? errorText}) {
     final errMsg = errorText ?? 'Text is required';
-    if (value == null) return errMsg;
-    if (value.trim().isEmpty) return errMsg;
+    if (text == null) return errMsg;
+    if (text.trim().isEmpty) return errMsg;
+  }
+
+  static String? lengthRequired(
+    String? text, {
+    String? fieldName,
+    required int minLength,
+    required int maxLength,
+  }) {
+    assert(minLength > 0, 'Min length must be a postive number');
+    assert(maxLength > 0, 'Max length must be a postive number');
+    if (text == null || text.trim().isEmpty) {
+      return '${fieldName ?? 'Text'} is required';
+    }
+    if (text.length < minLength || text.length > maxLength) {
+      return '${fieldName ?? 'Text'} must contain between $minLength and $maxLength characters';
+    }
   }
 
   static String? emailAddressValid(String? email) {
