@@ -6,7 +6,12 @@ import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 
 class InputLocationAddressScreen extends StatefulWidget {
-  const InputLocationAddressScreen({Key? key}) : super(key: key);
+  const InputLocationAddressScreen({
+    Key? key,
+    this.initialData,
+  }) : super(key: key);
+
+  final LocationAddress? initialData;
 
   @override
   State<InputLocationAddressScreen> createState() =>
@@ -33,6 +38,8 @@ class _InputLocationAddressScreenState
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return CupertinoPickerFormField<Level1>(
       key: _provinceOrCityFieldKey,
+      initialValue: _level1,
+      validator: (value) => DataValidator.required(value),
       values: sortedLevel1s,
       valueAsString: (value) => value.name,
       decoration: _inputDecoration.copyWith(
@@ -48,7 +55,6 @@ class _InputLocationAddressScreenState
           _townOrWardOrCommuneFieldKey.currentState?.clear();
         }
       }),
-      validator: (value) => DataValidator.required(value),
     );
   }
 
@@ -58,6 +64,8 @@ class _InputLocationAddressScreenState
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return CupertinoPickerFormField<Level2>(
       key: _cityOrDistrictFieldKey,
+      initialValue: _level2,
+      validator: (value) => DataValidator.required(value),
       values: sortedLevel2s,
       valueAsString: (value) => value.name,
       decoration: _inputDecoration.copyWith(
@@ -71,7 +79,6 @@ class _InputLocationAddressScreenState
           _townOrWardOrCommuneFieldKey.currentState?.clear();
         }
       }),
-      validator: (value) => DataValidator.required(value),
     );
   }
 
@@ -81,28 +88,39 @@ class _InputLocationAddressScreenState
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return CupertinoPickerFormField<Level3>(
       key: _townOrWardOrCommuneFieldKey,
+      initialValue: _level3,
+      onSaved: (value) => _level3 = value,
       values: sortedLevel3s,
       valueAsString: (value) => value.name,
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.brightness_3_outlined),
         labelText: "Town, ward, or commune",
       ),
-      onSaved: (value) => _level3 = value,
     );
   }
 
   ClearableTextFormField get _routeFormField {
     return ClearableTextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      initialValue: _route,
+      validator: (value) =>
+          DataValidator.lengthRequired(value, minLength: 3, maxLength: 30),
+      onSaved: (value) => _route = value,
       keyboardType: TextInputType.streetAddress,
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.directions_outlined),
         labelText: "Route name",
       ),
-      onSaved: (value) => _route = value,
-      validator: (value) =>
-          DataValidator.lengthRequired(value, minLength: 3, maxLength: 30),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _level1 = widget.initialData?.level1;
+    _level2 = widget.initialData?.level2;
+    _level3 = widget.initialData?.level3;
+    _route = widget.initialData?.route;
   }
 
   @override

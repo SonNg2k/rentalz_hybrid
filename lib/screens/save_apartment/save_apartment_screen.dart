@@ -53,8 +53,8 @@ class _BodyState extends State<_Body> {
     );
   }
 
-  FormField<String> get _locationAddressFormField {
-    return FormField<String>(
+  FormField<LocationAddress> get _locationAddressFormField {
+    return FormField<LocationAddress>(
       builder: (fieldState) => Column(
         children: [
           MaterialButton(
@@ -62,7 +62,12 @@ class _BodyState extends State<_Body> {
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
 
-              NavigationService.pushNewPage(const InputLocationAddressScreen());
+              final location = await NavigationService.pushNewPage(
+                      InputLocationAddressScreen(initialData: fieldState.value))
+                  as LocationAddress?;
+              if (location != null) {
+                fieldState.didChange(location);
+              }
             },
             child: AbsorbPointer(
               child: TextField(
@@ -75,10 +80,11 @@ class _BodyState extends State<_Body> {
                   floatingLabelBehavior: (fieldState.value != null)
                       ? FloatingLabelBehavior.always
                       : null,
-                  labelText: "Street address",
+                  labelText: "Location address",
                   suffixIcon: const Icon(Icons.chevron_right),
-                  hintText:
-                      (fieldState.value != null) ? fieldState.value : null,
+                  hintText: (fieldState.value != null)
+                      ? fieldState.value!.formattedAddress
+                      : null,
                   hintStyle: const TextStyle(color: Color(0xdd000000)),
                 ),
               ),
