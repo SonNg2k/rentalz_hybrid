@@ -17,8 +17,8 @@ class DataValidator {
     if (value == null || value.trim().isEmpty) {
       return 'Fullname is required';
     }
-    if (value.trim().length < 4 || value.trim().length > 64) {
-      return 'Name must contain between 4 and 64 characters';
+    if (value.trim().length < 3 || value.trim().length > 64) {
+      return 'Name must contain between 3 and 64 characters';
     }
 
     /// Only accepts letters, comma, dot, single quote, and hyphen.

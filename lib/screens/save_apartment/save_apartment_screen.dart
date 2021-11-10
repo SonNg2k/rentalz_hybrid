@@ -7,6 +7,7 @@ import 'package:rentalz/screens/save_apartment/input_location_address_screen.dar
 import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
+import 'package:rentalz/widgets/form_validation_manager.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
 class SaveApartmentScreen extends StatelessWidget {
@@ -33,11 +34,23 @@ class _Body extends StatefulWidget {
 
 class _BodyState extends State<_Body> {
   final _formKey = GlobalKey<FormState>();
+  final _formValidationManager = FormValidationManager();
+
+  String? _name;
+  String? _reporterName;
+  ApartmentType? _apartmentType;
 
   ClearableTextFormField get _nameFormField {
     return ClearableTextFormField(
+      validator: _formValidationManager.wrapValidator(
+        '_nameFormField',
+        (value) =>
+            DataValidator.lengthRequired(value, minLength: 3, maxLength: 40),
+      ),
+      onSaved: (value) => _name = value,
+      focusNode: _formValidationManager.getFocusNodeForField('_nameFormField'),
       decoration: _inputDecoration.copyWith(
-        prefixIcon: const Icon(Icons.info),
+        prefixIcon: const Icon(Icons.info_outlined),
         labelText: "Apartment name",
       ),
     );
@@ -45,7 +58,13 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _reporterNameFormField {
     return ClearableTextFormField(
-      validator: (value) => DataValidator.fullnameValid(value),
+      validator: _formValidationManager.wrapValidator(
+        '_reporterNameFormField',
+        (value) => DataValidator.fullnameValid(value),
+      ),
+      onSaved: (value) => _reporterName = value,
+      focusNode:
+          _formValidationManager.getFocusNodeForField('_reporterNameFormField'),
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.person_outline),
         labelText: "Reporter's name",
@@ -55,7 +74,13 @@ class _BodyState extends State<_Body> {
 
   FormField<LocationAddress> get _locationAddressFormField {
     return FormField<LocationAddress>(
+      validator: _formValidationManager.wrapValidator(
+        '_locationAddressFormField',
+        (value) => DataValidator.required(value),
+      ),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MaterialButton(
             padding: const EdgeInsets.all(0),
@@ -70,32 +95,51 @@ class _BodyState extends State<_Body> {
               }
             },
             child: AbsorbPointer(
-              child: TextField(
-                keyboardType: TextInputType.streetAddress,
-                readOnly: true,
-                showCursor: false,
-                decoration: InputDecoration(
-                  filled: true,
-                  prefixIcon: const Icon(Icons.map_outlined),
-                  floatingLabelBehavior: (fieldState.value != null)
-                      ? FloatingLabelBehavior.always
-                      : null,
-                  labelText: "Location address",
-                  suffixIcon: const Icon(Icons.chevron_right),
-                  hintText: (fieldState.value != null)
-                      ? fieldState.value!.formattedAddress
-                      : null,
-                  hintStyle: const TextStyle(color: Color(0xdd000000)),
+              child: Theme(
+                data: fieldState.hasError
+                    ? ThemeData().copyWith(
+                        colorScheme: ThemeData()
+                            .colorScheme
+                            .copyWith(primary: const Color(0xffd32f2f)),
+                        inputDecorationTheme: const InputDecorationTheme(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xffd32f2f)),
+                          ),
+                        ),
+                      )
+                    : Theme.of(fieldState.context),
+                child: TextField(
+                  keyboardType: TextInputType.streetAddress,
+                  focusNode: _formValidationManager
+                      .getFocusNodeForField('_locationAddressFormField'),
+                  readOnly: true,
+                  showCursor: false,
+                  decoration: InputDecoration(
+                    filled: true,
+                    prefixIcon: const Icon(Icons.map_outlined),
+                    floatingLabelBehavior: (fieldState.value != null)
+                        ? FloatingLabelBehavior.always
+                        : null,
+                    labelText: "Location address",
+                    suffixIcon: const Icon(Icons.chevron_right),
+                    hintText: (fieldState.value != null)
+                        ? fieldState.value!.formattedAddress
+                        : null,
+                    hintStyle: const TextStyle(color: Color(0xdd000000)),
+                  ),
                 ),
               ),
             ),
           ),
-          Text(
-            fieldState.errorText ?? '',
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(color: Theme.of(context).errorColor),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 8),
+            child: Text(
+              fieldState.errorText ?? '',
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: Theme.of(context).errorColor),
+            ),
           ),
         ],
       ),
@@ -104,6 +148,12 @@ class _BodyState extends State<_Body> {
 
   FormField<ApartmentType> get _apartmentTypeFormField {
     return CupertinoPickerFormField<ApartmentType>(
+      validator: _formValidationManager.wrapValidator(
+        '_apartmentTypeFormField',
+        (value) => DataValidator.required(value),
+      ),
+      focusNode: _formValidationManager
+          .getFocusNodeForField('_apartmentTypeFormField'),
       values: ApartmentType.values,
       valueAsString: (value) => value.formattedString,
       decoration: const InputDecoration(
@@ -116,6 +166,11 @@ class _BodyState extends State<_Body> {
 
   FormField<ComfortLevel> get _comfortLevelFormField {
     return FormField<ComfortLevel>(
+      validator: _formValidationManager.wrapValidator(
+        '_comfortLevelFormField',
+        (value) => DataValidator.required(value),
+      ),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       builder: (fieldState) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -154,30 +209,49 @@ class _BodyState extends State<_Body> {
               }
             },
             child: AbsorbPointer(
-              child: TextField(
-                readOnly: true,
-                showCursor: false,
-                decoration: InputDecoration(
-                  filled: true,
-                  prefixIcon: const Icon(Icons.category_outlined),
-                  floatingLabelBehavior: (fieldState.value != null)
-                      ? FloatingLabelBehavior.always
-                      : null,
-                  labelText: "Comfort level",
-                  hintText: (fieldState.value != null)
-                      ? fieldState.value!.formattedString
-                      : null,
-                  hintStyle: const TextStyle(color: Color(0xdd000000)),
+              child: Theme(
+                data: fieldState.hasError
+                    ? ThemeData().copyWith(
+                        colorScheme: ThemeData()
+                            .colorScheme
+                            .copyWith(primary: const Color(0xffd32f2f)),
+                        inputDecorationTheme: const InputDecorationTheme(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xffd32f2f)),
+                          ),
+                        ),
+                      )
+                    : Theme.of(fieldState.context),
+                child: TextField(
+                  focusNode: _formValidationManager
+                      .getFocusNodeForField('_comfortLevelFormField'),
+                  readOnly: true,
+                  showCursor: false,
+                  decoration: InputDecoration(
+                    filled: true,
+                    prefixIcon: const Icon(Icons.category_outlined),
+                    floatingLabelBehavior: (fieldState.value != null)
+                        ? FloatingLabelBehavior.always
+                        : null,
+                    labelText: "Comfort level",
+                    hintText: (fieldState.value != null)
+                        ? fieldState.value!.formattedString
+                        : null,
+                    hintStyle: const TextStyle(color: Color(0xdd000000)),
+                  ),
                 ),
               ),
             ),
           ),
-          Text(
-            fieldState.errorText ?? '',
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(color: Theme.of(context).errorColor),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 8),
+            child: Text(
+              fieldState.errorText ?? '',
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: Theme.of(context).errorColor),
+            ),
           ),
         ],
       ),
@@ -186,6 +260,12 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _monthlyRentFormField {
     return ClearableTextFormField(
+      validator: _formValidationManager.wrapValidator(
+        '_monthlyRentFormField',
+        (value) => DataValidator.textRequired(value),
+      ),
+      focusNode:
+          _formValidationManager.getFocusNodeForField('_monthlyRentFormField'),
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -201,6 +281,12 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _nBedroomsFormField {
     return ClearableTextFormField(
+      validator: _formValidationManager.wrapValidator(
+        '_nBedroomsFormField',
+        (value) => DataValidator.textRequired(value),
+      ),
+      focusNode:
+          _formValidationManager.getFocusNodeForField('_nBedroomsFormField'),
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -234,7 +320,13 @@ class _BodyState extends State<_Body> {
   ElevatedButton get _formSubmitBtn {
     return ElevatedButton.icon(
       onPressed: () {
-        if (_formKey.currentState!.validate()) {}
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+        } else {
+          _formValidationManager.erroredFields.first.focusNode.requestFocus();
+          Scrollable.ensureVisible(
+              _formValidationManager.erroredFields.first.focusNode.context!);
+        }
       },
       icon: const Icon(Icons.cloud_done_outlined),
       label: const Text('Submit'),
@@ -270,6 +362,12 @@ class _BodyState extends State<_Body> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _formValidationManager.dispose();
   }
 }
 
