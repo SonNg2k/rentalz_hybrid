@@ -13,10 +13,10 @@ class CupertinoPickerFormField<T> extends FormField<T> {
   CupertinoPickerFormField({
     // Features
     // this.resetIcon = const Icon(Icons.close),
+    void Function(T?)? onPickerClose,
+    required List<T> values,
     // Only properties with [this] belong to this class
-    required this.values,
     required this.valueAsString,
-    this.onPickerClose,
 
     // From [super]
     Key? key,
@@ -30,6 +30,7 @@ class CupertinoPickerFormField<T> extends FormField<T> {
     // Key? key,
     // T? initialValue,
     // bool enabled = true,
+    FocusNode? focusNode,
     InputDecoration decoration = const InputDecoration(),
     TextStyle? style,
   }) : super(
@@ -49,8 +50,6 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                 : decoration.border!.copyWith(
                     borderSide: const BorderSide(color: Color(0xffd32f2f)),
                   );
-            final errorDecoration =
-                decoration.copyWith(enabledBorder: errorBorder);
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,16 +78,28 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                     if (onPickerClose != null) onPickerClose(field.value);
                   },
                   child: AbsorbPointer(
-                    child: TextField(
-                      controller: state._controller,
-                      enabled: enabled,
-                      style: style,
-                      decoration:
-                          (field.hasError) ? errorDecoration : decoration,
+                    child: Theme(
+                      data: field.hasError
+                          ? ThemeData().copyWith(
+                              colorScheme: ThemeData()
+                                  .colorScheme
+                                  .copyWith(primary: const Color(0xffd32f2f)),
+                              inputDecorationTheme: InputDecorationTheme(
+                                enabledBorder: errorBorder,
+                              ),
+                            )
+                          : Theme.of(field.context),
+                      child: TextField(
+                        controller: state._controller,
+                        focusNode: focusNode,
+                        enabled: enabled,
+                        style: style,
+                        decoration: decoration,
 
-                      /// Disable content selection of [TextField]
-                      readOnly: true,
-                      showCursor: false,
+                        /// Disable content selection of [TextField]
+                        readOnly: true,
+                        showCursor: false,
+                      ),
                     ),
                   ),
                 ),
@@ -107,10 +118,10 @@ class CupertinoPickerFormField<T> extends FormField<T> {
           },
         );
 
+  /// Only members declared here are accessible to the
+  /// [CupertinoPickerFormFieldState]
   // final Icon resetIcon;
-  final List<T> values;
   final String Function(T) valueAsString;
-  final void Function(T?)? onPickerClose;
 
   @override
   FormFieldState<T> createState() => CupertinoPickerFormFieldState<T>();
