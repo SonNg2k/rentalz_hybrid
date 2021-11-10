@@ -17,6 +17,7 @@ ApartmentModel _$ApartmentModelFromJson(Map json) => ApartmentModel(
       monthlyRent: json['monthly_rent'] as int,
       nBedrooms: json['n_bedrooms'] as int,
       note: json['note'] as String?,
+      creatorId: json['creator_id'] as String,
       createdAt:
           ApartmentModel._fromJsonTimestamp(json['created_at'] as Timestamp),
     );
@@ -32,6 +33,7 @@ Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
       'monthly_rent': instance.monthlyRent,
       'n_bedrooms': instance.nBedrooms,
       'note': instance.note,
+      'creator_id': instance.creatorId,
       'created_at': ApartmentModel._toJsonTimestamp(instance.createdAt),
     };
 
@@ -60,7 +62,7 @@ const _$ComfortLevelEnumMap = {
 AddressComponents _$AddressComponentsFromJson(Map json) => AddressComponents(
       level1Id: json['level1_id'] as String,
       level2Id: json['level2_id'] as String,
-      level3Id: json['level3_id'] as String,
+      level3Id: json['level3_id'] as String?,
       route: json['route'] as String,
     );
 

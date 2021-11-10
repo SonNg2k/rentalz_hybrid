@@ -99,6 +99,7 @@ class ApartmentModel {
     required this.monthlyRent,
     required this.nBedrooms,
     this.note,
+    required this.creatorId,
     required this.createdAt,
   });
 
@@ -125,6 +126,9 @@ class ApartmentModel {
   final int nBedrooms;
 
   final String? note;
+
+  @JsonKey(name: 'creator_id')
+  final String creatorId;
 
   @JsonKey(
     name: 'created_at',
@@ -161,9 +165,9 @@ class AddressComponents {
   @JsonKey(name: 'level2_id')
   final String level2Id;
 
-  /// The unique code for town, ward, or commune.
+  /// The unique code for town, ward, or commune. Some areas don't have level 3.
   @JsonKey(name: 'level3_id')
-  final String level3Id;
+  final String? level3Id;
 
   final String route;
 
