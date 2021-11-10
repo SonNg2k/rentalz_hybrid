@@ -63,7 +63,7 @@ class ClearableTextFormField extends FormField<String> {
     InputCounterWidgetBuilder? buildCounter,
     ScrollPhysics? scrollPhysics,
     Iterable<String>? autofillHints,
-    AutovalidateMode? autovalidateMode,
+    AutovalidateMode autovalidateMode = AutovalidateMode.onUserInteraction,
     ScrollController? scrollController,
 
     // Features
@@ -94,7 +94,7 @@ class ClearableTextFormField extends FormField<String> {
           onSaved: onSaved,
           validator: validator,
           enabled: enabled ?? true,
-          autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
+          autovalidateMode: autovalidateMode,
           builder: (FormFieldState<String> field) {
             final _ClearableTextFormFieldState state =
                 field as _ClearableTextFormFieldState;

@@ -1,3 +1,5 @@
+/// The all-in-one class to validate all kinds of data for this app. Decouple
+/// all validation logics from your UI logic.
 class DataValidator {
   DataValidator._();
 
@@ -9,6 +11,25 @@ class DataValidator {
     final errMsg = errorText ?? 'Text is required';
     if (text == null) return errMsg;
     if (text.trim().isEmpty) return errMsg;
+  }
+
+  static String? fullnameValid(String? text) {
+    if (text == null || text.trim().isEmpty) {
+      return 'Fullname is required';
+    }
+    if (text.trim().length < 4 || text.trim().length > 64) {
+      return 'Name must contain between 4 and 64 characters';
+    }
+
+    /// Only accepts letters, comma, dot, single quote, and hyphen.
+    final _fullnameRegex = RegExp(
+      r"^[a-z àáâãèéêếìíòóôõùúăđĩũơưăạảấầẩẫậắằẳẵặẹẻẽềềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ,.'-]+$",
+      unicode: true,
+      caseSensitive: false,
+    );
+    if (!_fullnameRegex.hasMatch(text)) {
+      return 'Please remove invalid characters from your name';
+    }
   }
 
   static String? lengthRequired(
@@ -29,8 +50,7 @@ class DataValidator {
 
   static String? emailAddressValid(String? email) {
     if (email == null || email.trim().isEmpty) return 'Email is required';
-    final trimmedEmail = email.trim();
-    if (trimmedEmail.length < 5 || trimmedEmail.length > 50) {
+    if (email.trim().length < 5 || email.trim().length > 50) {
       return 'Email must contain between 5 and 50 characters';
     }
     final emailRegex = RegExp(

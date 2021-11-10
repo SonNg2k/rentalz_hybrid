@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/screens/save_apartment/input_location_address_screen.dart';
+import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
@@ -44,7 +45,7 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _reporterNameFormField {
     return ClearableTextFormField(
-      /// TODO: regex to validate name
+      validator: (value) => DataValidator.fullnameValid(value),
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.person_outline),
         labelText: "Reporter's name",
@@ -52,8 +53,8 @@ class _BodyState extends State<_Body> {
     );
   }
 
-  FormField get _locationAddressFormField {
-    return FormField(
+  FormField<String> get _locationAddressFormField {
+    return FormField<String>(
       builder: (fieldState) => Column(
         children: [
           MaterialButton(
@@ -63,16 +64,22 @@ class _BodyState extends State<_Body> {
 
               NavigationService.pushNewPage(const InputLocationAddressScreen());
             },
-            child: const AbsorbPointer(
+            child: AbsorbPointer(
               child: TextField(
                 keyboardType: TextInputType.streetAddress,
                 readOnly: true,
                 showCursor: false,
                 decoration: InputDecoration(
                   filled: true,
-                  prefixIcon: Icon(Icons.map_outlined),
+                  prefixIcon: const Icon(Icons.map_outlined),
+                  floatingLabelBehavior: (fieldState.value != null)
+                      ? FloatingLabelBehavior.always
+                      : null,
                   labelText: "Street address",
-                  suffixIcon: Icon(Icons.chevron_right),
+                  suffixIcon: const Icon(Icons.chevron_right),
+                  hintText:
+                      (fieldState.value != null) ? fieldState.value : null,
+                  hintStyle: const TextStyle(color: Color(0xdd000000)),
                 ),
               ),
             ),
@@ -220,7 +227,9 @@ class _BodyState extends State<_Body> {
 
   ElevatedButton get _formSubmitBtn {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {}
+      },
       icon: const Icon(Icons.cloud_done_outlined),
       label: const Text('Submit'),
     );
