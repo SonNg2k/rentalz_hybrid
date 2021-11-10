@@ -52,4 +52,42 @@ class AlertService {
         ),
       );
   }
+
+  /// This dialog appears before a potentially dangerous operation is performed.
+  /// Have two buttons, one to cancel and one to confirm. Return a [Future]
+  /// that complete with [true] when the confirm button is tapped and [false]
+  /// when the cancel button is tapped or the dialog is dismissed.
+  static Future<bool> showConfirmationDialog({
+    Widget? title,
+    Widget? content,
+    String? confirmText,
+  }) async {
+    final result = await showDialog<bool>(
+      context: NavigationService.navigatorKey.currentContext!,
+      builder: (_) => Theme(
+        data: ThemeData(
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(primary: Colors.black),
+          ),
+        ),
+        child: AlertDialog(
+          title: title,
+          content: content,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(
+                  NavigationService.navigatorKey.currentContext!, false),
+              child: const Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(
+                  NavigationService.navigatorKey.currentContext!, true),
+              child: Text(confirmText?.toUpperCase() ?? 'CONFIRM'),
+            ),
+          ],
+        ),
+      ),
+    );
+    return result ?? false;
+  }
 }

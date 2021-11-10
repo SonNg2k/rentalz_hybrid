@@ -378,6 +378,13 @@ class _BodyState extends State<_Body> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
+      onWillPop: () async {
+        final result = await AlertService.showConfirmationDialog(
+          content: const Text('Are you sure you want to discard any changes?'),
+          confirmText: 'Discard',
+        );
+        return result;
+      },
       child: Scrollbar(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
