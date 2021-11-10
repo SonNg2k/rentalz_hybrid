@@ -10,7 +10,7 @@ import 'package:rentalz/services/auth_service/login_with_facebook.service.dart';
 import 'package:rentalz/services/auth_service/login_with_google.service.dart';
 import 'package:rentalz/services/auth_service/send_auth_link_and_verify_screen.dart';
 import 'package:rentalz/services/auth_service/send_sign_in_link_to_email.service.dart';
-import 'package:rentalz/utils/check_if_email_is_valid.dart';
+import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/widgets/or_divider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -112,7 +112,7 @@ class _EmailLinkLoginSectionState extends State<EmailLinkLoginSection> {
           ? null
           : () {
               final email = _emailInpController.text;
-              final emailErr = checkIfEmailIsValid(email);
+              final emailErr = DataValidator.emailAddressValid(email);
               if (emailErr != null) {
                 return AlertService.showEphemeralSnackBar(emailErr);
               }
@@ -131,7 +131,7 @@ class _EmailLinkLoginSectionState extends State<EmailLinkLoginSection> {
           ? null
           : () {
               final email = _emailInpController.text;
-              final emailErr = checkIfEmailIsValid(email);
+              final emailErr = DataValidator.emailAddressValid(email);
               if (emailErr != null) {
                 return AlertService.showEphemeralSnackBar(emailErr);
               }
