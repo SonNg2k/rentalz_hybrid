@@ -40,11 +40,13 @@ class _InputLocationAddressScreenState
         labelText: "Province or city",
       ),
       onPickerClose: (value) => setState(() {
-        _level1 = value;
-        _level2 = null;
-        _level3 = null;
-        _cityOrDistrictFieldKey.currentState?.clear();
-        _townOrWardOrCommuneFieldKey.currentState?.clear();
+        if (value != _level1) {
+          _level1 = value;
+          _level2 = null;
+          _level3 = null;
+          _cityOrDistrictFieldKey.currentState?.clear();
+          _townOrWardOrCommuneFieldKey.currentState?.clear();
+        }
       }),
       validator: (value) => DataValidator.required(value),
     );
@@ -63,9 +65,11 @@ class _InputLocationAddressScreenState
         labelText: "City or district",
       ),
       onPickerClose: (value) => setState(() {
-        _level2 = value;
-        _level3 = null;
-        _townOrWardOrCommuneFieldKey.currentState?.clear();
+        if (value != _level2) {
+          _level2 = value;
+          _level3 = null;
+          _townOrWardOrCommuneFieldKey.currentState?.clear();
+        }
       }),
       validator: (value) => DataValidator.required(value),
     );
@@ -84,11 +88,9 @@ class _InputLocationAddressScreenState
         labelText: "Town, ward, or commune",
       ),
       onSaved: (value) => _level3 = value,
-      validator: (value) => DataValidator.required(value),
     );
   }
 
-  /// TODO limit min, max length
   ClearableTextFormField get _routeFormField {
     return ClearableTextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -98,7 +100,8 @@ class _InputLocationAddressScreenState
         labelText: "Route name",
       ),
       onSaved: (value) => _route = value,
-      validator: (value) => DataValidator.textRequired(value),
+      validator: (value) =>
+          DataValidator.lengthRequired(value, minLength: 3, maxLength: 30),
     );
   }
 
@@ -117,18 +120,18 @@ class _InputLocationAddressScreenState
                   final addressBuilder = StringBuffer();
                   addressBuilder.writeAll([
                     _route,
-                    _level3!.name,
+                    if (_level3 != null) _level3!.name,
                     _level2!.name,
                     _level1!.name,
                   ], ', ');
                   Navigator.pop(
                       context,
                       LocationAddress(
-                        formattedAddress: addressBuilder.toString(),
                         level1: _level1!,
                         level2: _level2!,
-                        level3: _level3!,
+                        level3: _level3,
                         route: _route!,
+                        formattedAddress: addressBuilder.toString(),
                       ));
                 }
               },
@@ -170,15 +173,17 @@ const _inputDecoration = InputDecoration(
 
 class LocationAddress {
   const LocationAddress({
-    required this.formattedAddress,
     required this.level1,
     required this.level2,
     required this.level3,
     required this.route,
+    required this.formattedAddress,
   });
-  final String formattedAddress;
   final Level1 level1;
   final Level2 level2;
-  final Level3 level3;
+
+  /// Some areas don't have level 3.
+  final Level3? level3;
   final String route;
+  final String formattedAddress;
 }
