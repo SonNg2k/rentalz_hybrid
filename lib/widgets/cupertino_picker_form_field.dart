@@ -14,6 +14,7 @@ class CupertinoPickerFormField<T> extends FormField<T> {
     // Features
     // this.resetIcon = const Icon(Icons.close),
     void Function(T?)? onPickerClose,
+    void Function(T)? onChanged,
     required List<T> values,
     // Only properties with [this] belong to this class
     required this.valueAsString,
@@ -66,11 +67,14 @@ class CupertinoPickerFormField<T> extends FormField<T> {
                         pickedValue: field.value,
                         values: values,
                         valueAsString: valueAsString,
-                        onSelectedItemChanged: (index) =>
-                            field.didChange(values[index]),
+                        onSelectedItemChanged: (index) {
+                          field.didChange(values[index]);
+                          if (onChanged != null) onChanged(values[index]);
+                        },
                         onBuildComplete: () {
                           if (field.value == null && values.isNotEmpty) {
                             field.didChange(values[0]);
+                            if (onChanged != null) onChanged(values[0]);
                           }
                         },
                       ),

@@ -41,6 +41,8 @@ class _BodyState extends State<_Body> {
   final _formKey = GlobalKey<FormState>();
   final _formValidationManager = FormValidationManager();
 
+  bool _formIsChanged = false;
+
   String? _name;
   String? _reporterName;
   LocationAddress? _locationAddress;
@@ -49,6 +51,10 @@ class _BodyState extends State<_Body> {
   String? _monthlyRent;
   String? _nBedrooms;
   String? _note;
+
+  void _informFormChange(dynamic _) {
+    if (!_formIsChanged) _formIsChanged = true;
+  }
 
   ClearableTextFormField get _nameFormField {
     return ClearableTextFormField(
@@ -59,6 +65,7 @@ class _BodyState extends State<_Body> {
       ),
       onSaved: (value) => _name = value,
       focusNode: _formValidationManager.getFocusNodeForField('_nameFormField'),
+      onChanged: _informFormChange,
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.info_outlined),
         labelText: "Apartment name",
@@ -75,6 +82,7 @@ class _BodyState extends State<_Body> {
       onSaved: (value) => _reporterName = value,
       focusNode:
           _formValidationManager.getFocusNodeForField('_reporterNameFormField'),
+      onChanged: _informFormChange,
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.person_outline),
         labelText: "Reporter's name",
@@ -103,6 +111,7 @@ class _BodyState extends State<_Body> {
                   as LocationAddress?;
               if (location != null) {
                 fieldState.didChange(location);
+                _informFormChange(location);
               }
             },
             child: AbsorbPointer(
@@ -166,6 +175,7 @@ class _BodyState extends State<_Body> {
       onSaved: (value) => _apartmentType = value,
       focusNode: _formValidationManager
           .getFocusNodeForField('_apartmentTypeFormField'),
+      onChanged: _informFormChange,
       values: ApartmentType.values,
       valueAsString: (value) => value.formattedString,
       decoration: const InputDecoration(
@@ -219,6 +229,7 @@ class _BodyState extends State<_Body> {
               );
               if (selectedLevel != null && selectedLevel != fieldState.value) {
                 fieldState.didChange(selectedLevel);
+                _informFormChange(selectedLevel);
               }
             },
             child: AbsorbPointer(
@@ -280,6 +291,7 @@ class _BodyState extends State<_Body> {
       onSaved: (value) => _monthlyRent = value,
       focusNode:
           _formValidationManager.getFocusNodeForField('_monthlyRentFormField'),
+      onChanged: _informFormChange,
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -302,6 +314,7 @@ class _BodyState extends State<_Body> {
       onSaved: (value) => _nBedrooms = value,
       focusNode:
           _formValidationManager.getFocusNodeForField('_nBedroomsFormField'),
+      onChanged: _informFormChange,
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -318,6 +331,7 @@ class _BodyState extends State<_Body> {
   TextFormField get _noteFormField {
     return TextFormField(
       onSaved: (value) => _note = value,
+      onChanged: _informFormChange,
       textInputAction: TextInputAction.newline,
       keyboardType: TextInputType.multiline,
       decoration: _inputDecoration.copyWith(
@@ -379,6 +393,7 @@ class _BodyState extends State<_Body> {
     return Form(
       key: _formKey,
       onWillPop: () async {
+        if (!_formIsChanged) return true;
         final result = await AlertService.showConfirmationDialog(
           content: const Text('Are you sure you want to discard any changes?'),
           confirmText: 'Discard',
