@@ -45,9 +45,11 @@ class Level1 extends DvhcvnEntity {
 
   final List<Level2> children;
 
-  Level2? findLevel2ById(String id) => _findById<Level2>(children, id);
+  Level2? findLevel2ById(String id) =>
+      findDvhcvnEntityById<Level2>(children, id);
 
-  Level2? findLevel2ByName(String name) => _findByName<Level2>(children, name);
+  Level2? findLevel2ByName(String name) =>
+      findDvhcvnEntityByName<Level2>(children, name);
 }
 
 /// Represents a city or a district.
@@ -61,9 +63,11 @@ class Level2 extends DvhcvnEntity {
 
   Level1 get parent => level1s[_level1Index];
 
-  Level3? findLevel3ById(String id) => _findById<Level3>(children, id);
+  Level3? findLevel3ById(String id) =>
+      findDvhcvnEntityById<Level3>(children, id);
 
-  Level3? findLevel3ByName(String name) => _findByName<Level3>(children, name);
+  Level3? findLevel3ByName(String name) =>
+      findDvhcvnEntityByName<Level3>(children, name);
 }
 
 /// Represents a town, a ward, or a commune.
@@ -78,7 +82,7 @@ class Level3 extends DvhcvnEntity {
   Level2 get parent => level1s[_level1Index].children[_level2Index];
 }
 
-T? _findById<T extends DvhcvnEntity>(List<T> list, String id) {
+T? findDvhcvnEntityById<T extends DvhcvnEntity>(List<T> list, String id) {
   for (final item in list) {
     if (item.id == id) {
       return item;
@@ -87,7 +91,7 @@ T? _findById<T extends DvhcvnEntity>(List<T> list, String id) {
   return null;
 }
 
-T? _findByName<T extends DvhcvnEntity>(List<T> list, String name) {
+T? findDvhcvnEntityByName<T extends DvhcvnEntity>(List<T> list, String name) {
   for (final item in list) {
     if (item.name.isRelevantTo(name)) {
       return item;
