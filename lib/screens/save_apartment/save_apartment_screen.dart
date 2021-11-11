@@ -10,13 +10,22 @@ import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/repo/apartment_repo.dart';
 import 'package:rentalz/screens/save_apartment/input_location_address_screen.dart';
 import 'package:rentalz/utils/data_validator.dart';
+import 'package:rentalz/utils/dvhcvn/dvhcvn_data.dart';
+import 'package:rentalz/utils/dvhcvn/dvhcvn_model.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/form_validation_manager.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
 class SaveApartmentScreen extends StatelessWidget {
-  const SaveApartmentScreen({Key? key}) : super(key: key);
+  const SaveApartmentScreen({
+    Key? key,
+    this.apartmentId,
+    this.initialData,
+  }) : super(key: key);
+
+  final String? apartmentId;
+  final ApartmentModel? initialData;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +33,26 @@ class SaveApartmentScreen extends StatelessWidget {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(title: const Text('Apartment info')),
-        body: const SafeArea(child: _Body()),
+        body: SafeArea(
+          child: _Body(
+            apartmentId: apartmentId,
+            initialData: initialData,
+          ),
+        ),
       ),
     );
   }
 }
 
 class _Body extends StatefulWidget {
-  const _Body({Key? key}) : super(key: key);
+  const _Body({
+    Key? key,
+    required this.apartmentId,
+    required this.initialData,
+  }) : super(key: key);
+
+  final String? apartmentId;
+  final ApartmentModel? initialData;
 
   @override
   _BodyState createState() => _BodyState();
@@ -58,6 +79,7 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _nameFormField {
     return ClearableTextFormField(
+      initialValue: _name,
       validator: _formValidationManager.wrapValidator(
         '_nameFormField',
         (value) =>
@@ -75,6 +97,7 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _reporterNameFormField {
     return ClearableTextFormField(
+      initialValue: _reporterName,
       validator: _formValidationManager.wrapValidator(
         '_reporterNameFormField',
         (value) => DataValidator.fullnameValid(value),
@@ -92,6 +115,7 @@ class _BodyState extends State<_Body> {
 
   FormField<LocationAddress> get _locationAddressFormField {
     return FormField<LocationAddress>(
+      initialValue: _locationAddress,
       validator: _formValidationManager.wrapValidator(
         '_locationAddressFormField',
         (value) => DataValidator.required(value),
@@ -168,6 +192,7 @@ class _BodyState extends State<_Body> {
 
   FormField<ApartmentType> get _apartmentTypeFormField {
     return CupertinoPickerFormField<ApartmentType>(
+      initialValue: _apartmentType,
       validator: _formValidationManager.wrapValidator(
         '_apartmentTypeFormField',
         (value) => DataValidator.required(value),
@@ -188,6 +213,7 @@ class _BodyState extends State<_Body> {
 
   FormField<ComfortLevel> get _comfortLevelFormField {
     return FormField<ComfortLevel>(
+      initialValue: _comfortLevel,
       validator: _formValidationManager.wrapValidator(
         '_comfortLevelFormField',
         (value) => DataValidator.required(value),
@@ -284,6 +310,7 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _monthlyRentFormField {
     return ClearableTextFormField(
+      initialValue: _monthlyRent,
       validator: _formValidationManager.wrapValidator(
         '_monthlyRentFormField',
         (value) => DataValidator.textRequired(value),
@@ -307,6 +334,7 @@ class _BodyState extends State<_Body> {
 
   ClearableTextFormField get _nBedroomsFormField {
     return ClearableTextFormField(
+      initialValue: _nBedrooms,
       validator: _formValidationManager.wrapValidator(
         '_nBedroomsFormField',
         (value) => DataValidator.textRequired(value),
@@ -330,6 +358,7 @@ class _BodyState extends State<_Body> {
 
   TextFormField get _noteFormField {
     return TextFormField(
+      initialValue: _note,
       onSaved: (value) => _note = value,
       onChanged: _informFormChange,
       textInputAction: TextInputAction.newline,
@@ -351,6 +380,7 @@ class _BodyState extends State<_Body> {
     return ElevatedButton.icon(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
+          /// TODO add confirmation dialog
           _formKey.currentState!.save();
           final location = _locationAddress!;
           final data = ApartmentModel(
@@ -367,15 +397,22 @@ class _BodyState extends State<_Body> {
             comfortLevel: _comfortLevel!,
             monthlyRent: NumberFormat().parse(_monthlyRent!).toInt(),
             nBedrooms: int.parse(_nBedrooms!),
-            note: _note,
+            note: _note?.trim(),
             creatorId: FirebaseAuth.instance.currentUser!.uid,
-            createdAt: Timestamp.now(),
+            createdAt: widget.initialData?.createdAt ?? Timestamp.now(),
           );
-          await ApartmentRepo.add(data).catchError((onErr) {
-            debugPrint(onErr);
-          });
+          if (widget.apartmentId != null) {
+            await ApartmentRepo.update(widget.apartmentId!, data: data)
+                .catchError((onErr) {
+              debugPrint(onErr);
+            });
+          } else {
+            await ApartmentRepo.add(data).catchError((onErr) {
+              debugPrint(onErr);
+            });
+          }
           AlertService.showEphemeralSnackBar(
-              'Your apartment is added successfully ✅');
+              'Your apartment is saved successfully ✅');
           Navigator.pop(context);
         } else {
           _formValidationManager.erroredFields.first.focusNode.requestFocus();
@@ -386,6 +423,33 @@ class _BodyState extends State<_Body> {
       icon: const Icon(Icons.cloud_done_outlined),
       label: const Text('Submit'),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final initialData = widget.initialData;
+    _name = initialData?.name;
+    _reporterName = initialData?.reporterName;
+    _apartmentType = initialData?.type;
+    _comfortLevel = initialData?.comfortLevel;
+    if (initialData != null) {
+      final addressComponents = initialData.addressComponents;
+      final level1 = findDvhcvnEntityById(level1s, addressComponents.level1Id)!;
+      final level2 = level1.findLevel2ById(addressComponents.level2Id)!;
+      _locationAddress = LocationAddress(
+        level1: level1,
+        level2: level2,
+        level3: (addressComponents.level3Id != null)
+            ? level2.findLevel3ById(addressComponents.level3Id!)
+            : null,
+        route: addressComponents.route,
+        formattedAddress: initialData.formattedAddress,
+      );
+      _monthlyRent = NumberFormat("#,###").format(initialData.monthlyRent);
+    }
+    _nBedrooms = initialData?.nBedrooms.toString();
+    _note = initialData?.note;
   }
 
   @override

@@ -13,14 +13,17 @@ class ApartmentListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const _SearchFilterDrawer(),
-      body: SafeArea(
-        child: Stack(
-          children: const [
-            _SearchSection(),
-            FlowMenu(),
-          ],
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        drawer: const _SearchFilterDrawer(),
+        body: SafeArea(
+          child: Stack(
+            children: const [
+              _SearchSection(),
+              FlowMenu(),
+            ],
+          ),
         ),
       ),
     );
@@ -259,10 +262,16 @@ class _ApartmentListView extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: InkWell(
-            onTap: () => NavigationService.pushNewPage(
-              ApartmentDetailScreen(apartmentId: apartmentId),
-            ),
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              NavigationService.pushNewPage(
+                ApartmentDetailScreen(
+                    apartmentRef: apartmentList[index].reference),
+              );
+            },
             child: ListTile(
+              horizontalTitleGap: 0,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               isThreeLine: true,
               title: Text(
                 data.name,

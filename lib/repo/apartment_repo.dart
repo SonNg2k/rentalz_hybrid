@@ -13,6 +13,10 @@ class ApartmentRepo {
   static Future<DocumentReference<ApartmentModel>> add(ApartmentModel data) {
     return _apartmentListRef.add(data);
   }
+
+  static Future update(String id, {required ApartmentModel data}) {
+    return _apartmentListRef.doc(id).set(data, SetOptions(merge: true));
+  }
 }
 
 final _apartmentListRef = FirebaseFirestore.instance
