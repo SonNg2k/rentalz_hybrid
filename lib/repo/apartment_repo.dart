@@ -4,6 +4,12 @@ import 'package:rentalz/models/apartment/apartment_model.dart';
 class ApartmentRepo {
   ApartmentRepo._();
 
+  static Stream<QuerySnapshot<ApartmentModel>> list() {
+    return _apartmentListRef
+        .orderBy('created_at', descending: true)
+        .snapshots();
+  }
+
   static Future<DocumentReference<ApartmentModel>> add(ApartmentModel data) {
     return _apartmentListRef.add(data);
   }
