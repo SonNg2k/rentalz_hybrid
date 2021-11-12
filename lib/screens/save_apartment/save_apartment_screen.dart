@@ -372,7 +372,7 @@ class _BodyState extends State<_Body> {
       /// If maxLines is set to null, there is no limit to the number of lines.
       /// The field sizes itself to the inner text and the wrap is enabled.
       maxLines: null,
-      maxLength: 400,
+      maxLength: 800,
     );
   }
 
