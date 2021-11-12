@@ -380,7 +380,7 @@ class _BodyState extends State<_Body> {
     return ElevatedButton.icon(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          /// TODO add confirmation dialog
+          /// TODO add confirmation dialog and check for duplicate
           _formKey.currentState!.save();
           final location = _locationAddress!;
           final data = ApartmentModel(
@@ -412,7 +412,7 @@ class _BodyState extends State<_Body> {
             });
           }
           AlertService.showEphemeralSnackBar(
-              'Your apartment is saved successfully ✅');
+              'Your item is saved successfully ✅');
           Navigator.pop(context);
         } else {
           _formValidationManager.erroredFields.first.focusNode.requestFocus();

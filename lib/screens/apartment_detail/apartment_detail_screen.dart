@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
+import 'package:rentalz/repo/apartment_repo.dart';
 import 'package:rentalz/screens/save_apartment/save_apartment_screen.dart';
 import 'package:rentalz/widgets/expansion_section.dart';
 
@@ -45,7 +47,8 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                 return const CircularProgressIndicator.adaptive();
               }
               final id = snapshot.data!.id;
-              final data = snapshot.data!.data()!;
+              final data = snapshot.data!.data();
+              if (data == null) return Container();
               return Scrollbar(
                 child: SingleChildScrollView(
                   child: _DetailCard(apartmentId: id, apartmentData: data),
@@ -92,9 +95,14 @@ class _DetailCard extends StatelessWidget {
     );
   }
 
-  ExpansionSection get _noteSection {
+  ExpansionSection get _cardActionArea2 {
     final globalContext = NavigationService.navigatorKey.currentContext!;
     return ExpansionSection(
+      /// On rebuild due to real-time update of the note, a new UniqueKey is
+      /// generated, which will cause the old state assigned with the old
+      /// UniqueKey to be discarded and the new state assigned with a new
+      /// UniqueKey is created with state.isOpen == false.
+      key: UniqueKey(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: RichText(
@@ -148,7 +156,19 @@ class _DetailCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final isConfirmed = await AlertService.showConfirmationDialog(
+                    title: const Text('Delete apartment'),
+                    content: const Text(
+                        'This item will be permanently deleted and its data cannot be recovered.'),
+                  );
+                  if (isConfirmed) {
+                    await ApartmentRepo.delete(apartmentId);
+                    Navigator.pop(globalContext);
+                    AlertService.showEphemeralSnackBar(
+                        'The item is successfully deleted ✅');
+                  }
+                },
                 icon: Icon(
                   Icons.delete_forever,
                   color: Theme.of(globalContext).hintColor,
@@ -205,7 +225,7 @@ class _DetailCard extends StatelessWidget {
           _listTile(const Icon(Icons.bed_outlined),
               apartmentData.nBedrooms.toString()),
           _creationTsListTile,
-          _noteSection,
+          _cardActionArea2,
         ],
       ),
     );

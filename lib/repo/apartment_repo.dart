@@ -14,8 +14,12 @@ class ApartmentRepo {
     return _apartmentListRef.add(data);
   }
 
-  static Future update(String id, {required ApartmentModel data}) {
+  static Future<void> update(String id, {required ApartmentModel data}) {
     return _apartmentListRef.doc(id).set(data, SetOptions(merge: true));
+  }
+
+  static Future<void> delete(String id) {
+    return _apartmentListRef.doc(id).delete();
   }
 }
 
