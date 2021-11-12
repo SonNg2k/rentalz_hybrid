@@ -1,6 +1,6 @@
 /// The models in this file are inspired by this GitHub repo:
 /// https://github.com/daohoangson/dvhcvn/blob/master/transformers/dart-dvhcvn/lib/dvhcvn.dart
-import 'package:rentalz/utils/relevance_checking_string_ext.dart';
+import 'package:rentalz/utils/my_string_extension.dart';
 
 import 'dvhcvn_data.dart';
 

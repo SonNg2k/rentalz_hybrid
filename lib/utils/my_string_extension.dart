@@ -1,4 +1,4 @@
-extension RelevanceCheckingStringExt on String {
+extension MyStringExtension on String {
   /// Check for relavance between two strings regardless of whether they have
   /// diacritics or not.
   bool isRelevantTo(String string) {
@@ -10,6 +10,15 @@ extension RelevanceCheckingStringExt on String {
         RegExp(r'' + cleanRightString, caseSensitive: false, unicode: true);
     return cleanLeftString.contains(rightRegex) ||
         cleanRightString.contains(leftRegex);
+  }
+
+  /// A lowercased representation of the string with no spaces and no
+  /// diacritics. This format only contains alphabetic characters.
+  String uniqueCodeName() {
+    String s = toLowerCase();
+    s = _removeDiacriticsFromString(s);
+    s = s.replaceAll(RegExp(r'[^a-z]+'), '');
+    return s;
   }
 }
 
