@@ -91,8 +91,10 @@ enum ComfortLevel {
 class ApartmentModel {
   ApartmentModel({
     required this.name,
+    required this.sanitizedName,
     required this.reporterName,
     required this.formattedAddress,
+    required this.sanitizedAddress,
     required this.addressComponents,
     required this.type,
     required this.comfortLevel,
@@ -105,11 +107,19 @@ class ApartmentModel {
 
   final String name;
 
+  /// Used to check for duplicate apartment item.
+  @JsonKey(name: 'sanitized_name')
+  final String sanitizedName;
+
   @JsonKey(name: 'reporter_name')
   final String reporterName;
 
   @JsonKey(name: 'formatted_address')
   final String formattedAddress;
+
+  /// Used to check for duplicate apartment item.
+  @JsonKey(name: 'sanitized_address')
+  final String sanitizedAddress;
 
   @JsonKey(name: 'address_components')
   final AddressComponents addressComponents;

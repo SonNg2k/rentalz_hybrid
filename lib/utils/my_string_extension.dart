@@ -12,12 +12,10 @@ extension MyStringExtension on String {
         cleanRightString.contains(leftRegex);
   }
 
-  /// A lowercased representation of the string with no spaces and no
-  /// diacritics. This format only contains alphabetic characters.
-  String uniqueCodeName() {
+  String toLowerCaseWithNoDiacriticsAndSpaces() {
     String s = toLowerCase();
-    s = _removeDiacriticsFromString(s);
-    s = s.replaceAll(RegExp(r'[^a-z]+'), '');
+    s = _removeDiacriticsFromString(this);
+    s = s.replaceAll(RegExp(r'\s+'), '');
     return s;
   }
 }

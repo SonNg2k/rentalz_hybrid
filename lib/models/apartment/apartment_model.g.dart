@@ -8,8 +8,10 @@ part of 'apartment_model.dart';
 
 ApartmentModel _$ApartmentModelFromJson(Map json) => ApartmentModel(
       name: json['name'] as String,
+      sanitizedName: json['sanitized_name'] as String,
       reporterName: json['reporter_name'] as String,
       formattedAddress: json['formatted_address'] as String,
+      sanitizedAddress: json['sanitized_address'] as String,
       addressComponents: AddressComponents.fromJson(
           Map<String, dynamic>.from(json['address_components'] as Map)),
       type: $enumDecode(_$ApartmentTypeEnumMap, json['type']),
@@ -25,8 +27,10 @@ ApartmentModel _$ApartmentModelFromJson(Map json) => ApartmentModel(
 Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
     <String, dynamic>{
       'name': instance.name,
+      'sanitized_name': instance.sanitizedName,
       'reporter_name': instance.reporterName,
       'formatted_address': instance.formattedAddress,
+      'sanitized_address': instance.sanitizedAddress,
       'address_components': instance.addressComponents.toJson(),
       'type': _$ApartmentTypeEnumMap[instance.type],
       'comfort_level': _$ComfortLevelEnumMap[instance.comfortLevel],

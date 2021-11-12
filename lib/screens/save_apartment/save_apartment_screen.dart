@@ -12,6 +12,7 @@ import 'package:rentalz/screens/save_apartment/input_location_address_screen.dar
 import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/utils/dvhcvn/dvhcvn_data.dart';
 import 'package:rentalz/utils/dvhcvn/dvhcvn_model.dart';
+import 'package:rentalz/utils/my_string_extension.dart';
 import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/form_validation_manager.dart';
@@ -380,11 +381,14 @@ class _BodyState extends State<_Body> {
     return ElevatedButton.icon(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          /// TODO add confirmation dialog and check for duplicate
+          /// TODO add confirmation dialog
           _formKey.currentState!.save();
           final location = _locationAddress!;
           final data = ApartmentModel(
             name: _name!,
+            sanitizedName: _name!.toLowerCaseWithNoDiacriticsAndSpaces(),
+            sanitizedAddress: location.formattedAddress
+                .toLowerCaseWithNoDiacriticsAndSpaces(),
             reporterName: _reporterName!,
             formattedAddress: location.formattedAddress,
             addressComponents: AddressComponents(
@@ -407,13 +411,14 @@ class _BodyState extends State<_Body> {
               debugPrint(onErr);
             });
           } else {
-            await ApartmentRepo.add(data).catchError((onErr) {
-              debugPrint(onErr);
+            await ApartmentRepo.add(data).then((_) {
+              AlertService.showEphemeralSnackBar(
+                  'Your item is saved successfully ✅');
+              Navigator.pop(context);
+            }).catchError((onErr) {
+              AlertService.showPersistentSnackBar(onErr.toString());
             });
           }
-          AlertService.showEphemeralSnackBar(
-              'Your item is saved successfully ✅');
-          Navigator.pop(context);
         } else {
           _formValidationManager.erroredFields.first.focusNode.requestFocus();
           Scrollable.ensureVisible(
