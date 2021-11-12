@@ -14,7 +14,7 @@ extension MyStringExtension on String {
 
   String toLowerCaseWithNoDiacriticsAndSpaces() {
     String s = toLowerCase();
-    s = _removeDiacriticsFromString(this);
+    s = _removeDiacriticsFromString(s);
     s = s.replaceAll(RegExp(r'\s+'), '');
     return s;
   }

@@ -381,9 +381,10 @@ class _BodyState extends State<_Body> {
     return ElevatedButton.icon(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          /// TODO add confirmation dialog
           _formKey.currentState!.save();
           final location = _locationAddress!;
+
+          /// TODO add confirmation dialog
           final data = ApartmentModel(
             name: _name!,
             sanitizedName: _name!.toLowerCaseWithNoDiacriticsAndSpaces(),
@@ -405,20 +406,16 @@ class _BodyState extends State<_Body> {
             creatorId: FirebaseAuth.instance.currentUser!.uid,
             createdAt: widget.initialData?.createdAt ?? Timestamp.now(),
           );
-          if (widget.apartmentId != null) {
-            await ApartmentRepo.update(widget.apartmentId!, data: data)
-                .catchError((onErr) {
-              debugPrint(onErr);
-            });
-          } else {
-            await ApartmentRepo.add(data).then((_) {
-              AlertService.showEphemeralSnackBar(
-                  'Your item is saved successfully ✅');
-              Navigator.pop(context);
-            }).catchError((onErr) {
-              AlertService.showPersistentSnackBar(onErr.toString());
-            });
-          }
+          final asyncTask = (widget.apartmentId != null)
+              ? ApartmentRepo.update(widget.apartmentId!, data: data)
+              : ApartmentRepo.add(data);
+          asyncTask.then((_) {
+            AlertService.showEphemeralSnackBar(
+                'Your item is saved successfully ✅');
+            Navigator.pop(context);
+          }).catchError((onError) {
+            AlertService.showPersistentSnackBar(onError.toString());
+          });
         } else {
           _formValidationManager.erroredFields.first.focusNode.requestFocus();
           Scrollable.ensureVisible(

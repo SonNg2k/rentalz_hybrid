@@ -12,30 +12,46 @@ class ApartmentRepo {
 
   static Future<DocumentReference<ApartmentModel>> add(
       ApartmentModel data) async {
-    final nameLabel = data.sanitizedName;
-    final addressLabel = data.sanitizedAddress;
-    final snapshotByName = await _apartmentListRef
-        .where('sanitized_name', isEqualTo: nameLabel)
-        .get();
-    if (snapshotByName.docs.isNotEmpty) {
-      return Future.error('There is already an apartment item with this name.');
-    }
-    final snapshotByAddress = await _apartmentListRef
-        .where('sanitized_address', isEqualTo: addressLabel)
-        .get();
-    if (snapshotByAddress.docs.isNotEmpty) {
-      return Future.error(
-          'There is already an apartment item at this location.');
-    }
+    final errMsg = await _itemDuplicate(
+      sanitizedName: data.sanitizedName,
+      sanitizedAddress: data.sanitizedAddress,
+    );
+    if (errMsg != null) return Future.error(errMsg);
     return _apartmentListRef.add(data);
   }
 
-  static Future<void> update(String id, {required ApartmentModel data}) {
+  static Future<void> update(String id, {required ApartmentModel data}) async {
+    final errMsg = await _itemDuplicate(
+      sanitizedName: data.sanitizedName,
+      sanitizedAddress: data.sanitizedAddress,
+      idOfUpdatedItem: id,
+    );
+    if (errMsg != null) return Future.error(errMsg);
     return _apartmentListRef.doc(id).set(data, SetOptions(merge: true));
   }
 
   static Future<void> delete(String id) {
     return _apartmentListRef.doc(id).delete();
+  }
+}
+
+Future<String?> _itemDuplicate({
+  required String sanitizedName,
+  required String sanitizedAddress,
+  String? idOfUpdatedItem,
+}) async {
+  final names = await _apartmentListRef
+      .where('sanitized_name', isEqualTo: sanitizedName)
+      .get();
+  if (names.docs.isNotEmpty && names.docs[0].id != idOfUpdatedItem) {
+    return 'There is already an apartment item with this name.';
+  }
+  final addressList = await _apartmentListRef
+      .where('sanitized_address', isEqualTo: sanitizedAddress)
+      .get();
+  if (addressList.docs.isNotEmpty &&
+      addressList.docs[0].id != idOfUpdatedItem) {
+    return 'There is already an apartment item at this location.';
   }
 }
 
