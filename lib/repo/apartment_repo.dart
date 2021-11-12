@@ -12,7 +12,7 @@ class ApartmentRepo {
 
   static Future<DocumentReference<ApartmentModel>> add(
       ApartmentModel data) async {
-    final errMsg = await _itemDuplicate(
+    final errMsg = await _checkForDuplicateApartment(
       sanitizedName: data.sanitizedName,
       sanitizedAddress: data.sanitizedAddress,
     );
@@ -21,7 +21,7 @@ class ApartmentRepo {
   }
 
   static Future<void> update(String id, {required ApartmentModel data}) async {
-    final errMsg = await _itemDuplicate(
+    final errMsg = await _checkForDuplicateApartment(
       sanitizedName: data.sanitizedName,
       sanitizedAddress: data.sanitizedAddress,
       idOfUpdatedItem: id,
@@ -35,7 +35,7 @@ class ApartmentRepo {
   }
 }
 
-Future<String?> _itemDuplicate({
+Future<String?> _checkForDuplicateApartment({
   required String sanitizedName,
   required String sanitizedAddress,
   String? idOfUpdatedItem,
