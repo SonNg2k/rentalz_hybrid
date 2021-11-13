@@ -2,14 +2,14 @@ extension MyStringExtension on String {
   /// Check for relavance between two strings regardless of whether they have
   /// diacritics or not.
   bool isRelevantTo(String string) {
-    final cleanLeftString = _removeDiacriticsFromString(trim());
-    final cleanRightString = _removeDiacriticsFromString(string.trim());
-    final leftRegex =
-        RegExp(r'' + cleanLeftString, caseSensitive: false, unicode: true);
-    final rightRegex =
-        RegExp(r'' + cleanRightString, caseSensitive: false, unicode: true);
-    return cleanLeftString.contains(rightRegex) ||
-        cleanRightString.contains(leftRegex);
+    final source = _removeDiacriticsFromString(trim());
+    final stringToCompare = _removeDiacriticsFromString(string.trim());
+    final sourceRegex =
+        RegExp(r'' + source, caseSensitive: false, unicode: true);
+    final stringToCompareRegex =
+        RegExp(r'' + stringToCompare, caseSensitive: false, unicode: true);
+    return source.contains(stringToCompareRegex) ||
+        stringToCompare.contains(sourceRegex);
   }
 
   String toLowerCaseWithNoDiacriticsAndSpaces() {

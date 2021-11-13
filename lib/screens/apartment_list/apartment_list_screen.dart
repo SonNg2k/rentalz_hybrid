@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/repo/apartment_repo.dart';
 import 'package:rentalz/screens/apartment_detail/apartment_detail_screen.dart';
 import 'package:rentalz/screens/apartment_list/flow_menu.dart';
+import 'package:rentalz/utils/my_string_extension.dart';
 
 class ApartmentListScreen extends StatefulWidget {
   const ApartmentListScreen({Key? key}) : super(key: key);
@@ -111,8 +112,8 @@ class _SearchFilterDrawerState extends State<_SearchFilterDrawer> {
   }
 }
 
-/// Find the apartments whose names contain the search keyword.
-/// The search keyword is also used to find the apartments with reporters
+/// Find the apartments whose names contain the search by address/apartment name....
+/// The search by address/apartment name... is also used to find the apartments with reporters
 /// whose names contain the keyword.
 class _SearchSection extends StatefulWidget {
   const _SearchSection({
@@ -128,12 +129,25 @@ class _SearchSection extends StatefulWidget {
 
 class _SearchSectionState extends State<_SearchSection> {
   final _fsabController = FloatingSearchBarController();
-  List<QueryDocumentSnapshot<ApartmentModel>> apartmentListToShow = [];
+  List<QueryDocumentSnapshot<ApartmentModel>> _apartmentListToShow = [];
+
+  void _handleQueryChange(String query) {
+    if (query.trim().isEmpty) {
+      return setState(() => _apartmentListToShow = widget.apartments);
+    }
+    setState(
+      () => _apartmentListToShow = widget.apartments.where((snapshot) {
+        final data = snapshot.data();
+        return data.name.isRelevantTo(query) ||
+            data.formattedAddress.isRelevantTo(query);
+      }).toList(),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    apartmentListToShow = widget.apartments;
+    _apartmentListToShow = widget.apartments;
   }
 
   @override
@@ -156,7 +170,7 @@ class _SearchSectionState extends State<_SearchSection> {
         child: const SizedBox(
           width: 260,
           child: Text(
-            'Name of property or reporter...',
+            'Search by name or address...',
             textAlign: TextAlign.left,
             style: TextStyle(
               color: Color(0x99000000),
@@ -174,10 +188,10 @@ class _SearchSectionState extends State<_SearchSection> {
           icon: const Icon(Icons.filter_alt_outlined),
         ),
       ],
-      hint: 'Name of property or reporter...',
-      onQueryChanged: (query) {},
+      hint: 'Search by name or address...',
+      onQueryChanged: _handleQueryChange,
       body: Scrollbar(
-        child: _ApartmentListView(apartmentList: apartmentListToShow),
+        child: _ApartmentListView(apartmentList: _apartmentListToShow),
       ),
     );
   }
@@ -186,15 +200,13 @@ class _SearchSectionState extends State<_SearchSection> {
   void didUpdateWidget(covariant _SearchSection oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    /// StreamBuilder() will rebuild _SearchSection if the widget.apartmentList
-    /// data is changed in real-time, if this happen everything is reset...
-    apartmentListToShow = widget.apartments;
-    _fsabController.clear();
-    _fsabController.hide();
-    _fsabController.close();
-    WidgetsBinding.instance!.addPostFrameCallback(
-      (_) => AlertService.showEphemeralSnackBar('Your data is updated'),
-    );
+    /// When the widget.apartmentList is updated in real-time due to
+    /// StreamBuilder()...
+    _apartmentListToShow = widget.apartments;
+
+    /// New list detected, pick the apartment items relevant to the search
+    /// keyword...
+    _handleQueryChange(_fsabController.query);
   }
 
   @override
