@@ -10,7 +10,7 @@ import 'package:rentalz/screens/apartment_detail/apartment_detail_screen.dart';
 import 'package:rentalz/screens/apartment_list/flow_menu.dart';
 import 'package:rentalz/utils/my_string_extension.dart';
 
-import 'filter_option_list_drawer.dart';
+import 'filter_results_drawer.dart';
 
 class ApartmentListScreen extends StatefulWidget {
   const ApartmentListScreen({Key? key}) : super(key: key);
@@ -55,7 +55,7 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        drawer: const FilterOptionListDrawer(),
+        drawer: const FilterResultsDrawer(),
         body: SafeArea(
           child: Stack(
             children: [
@@ -81,10 +81,12 @@ class _SearchAndShowResultSection extends StatefulWidget {
   final List<QueryDocumentSnapshot<ApartmentModel>> apartments;
 
   @override
-  _SearchSectionState createState() => _SearchSectionState();
+  _SearchAndShowResultSectionState createState() =>
+      _SearchAndShowResultSectionState();
 }
 
-class _SearchSectionState extends State<_SearchAndShowResultSection> {
+class _SearchAndShowResultSectionState
+    extends State<_SearchAndShowResultSection> {
   final _fsabController = FloatingSearchBarController();
   List<QueryDocumentSnapshot<ApartmentModel>> _apartmentListToShow = [];
 

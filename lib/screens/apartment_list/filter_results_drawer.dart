@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FilterOptionListDrawer extends StatefulWidget {
-  const FilterOptionListDrawer({Key? key}) : super(key: key);
+class FilterResultsDrawer extends StatefulWidget {
+  const FilterResultsDrawer({Key? key}) : super(key: key);
 
   @override
-  State<FilterOptionListDrawer> createState() =>
-      FilterOptionListDrawerState();
+  State<FilterResultsDrawer> createState() => _FilterResultsDrawerState();
 }
 
-class FilterOptionListDrawerState extends State<FilterOptionListDrawer> {
+class _FilterResultsDrawerState extends State<FilterResultsDrawer> {
   Widget get _apartmentTypeOptions {
     return Column(
       children: [
