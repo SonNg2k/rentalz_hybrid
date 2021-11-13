@@ -10,6 +10,7 @@ class DataSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ...[
           Text('‣ Apartment name: ${data.name}.'),

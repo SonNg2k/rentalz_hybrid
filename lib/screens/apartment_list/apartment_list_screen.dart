@@ -190,9 +190,13 @@ class _SearchSectionState extends State<_SearchSection> {
       ],
       hint: 'Search by name or address...',
       onQueryChanged: _handleQueryChange,
-      body: Scrollbar(
-        child: _ApartmentListView(apartmentList: _apartmentListToShow),
-      ),
+      body: (_apartmentListToShow.isNotEmpty)
+          ? Scrollbar(
+              child: _ApartmentListView(apartmentList: _apartmentListToShow),
+            )
+          : const Center(
+              child: Text('No results found 🤣.', textAlign: TextAlign.left),
+            ),
     );
   }
 
