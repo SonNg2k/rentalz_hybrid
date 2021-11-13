@@ -17,6 +17,7 @@ import 'package:rentalz/widgets/clearable_text_form_field.dart';
 import 'package:rentalz/widgets/cupertino_picker_form_field.dart';
 import 'package:rentalz/widgets/form_validation_manager.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
+import 'package:rentalz/widgets/simple_dialog_form_field.dart';
 
 class SaveApartmentScreen extends StatelessWidget {
   const SaveApartmentScreen({
@@ -201,7 +202,7 @@ class _BodyState extends State<_Body> {
       onSaved: (value) => _apartmentType = value,
       focusNode: _formValidationManager
           .getFocusNodeForField('_apartmentTypeFormField'),
-      onChanged: _informFormChange,
+      onPickerClose: _informFormChange,
       values: ApartmentType.values,
       valueAsString: (value) => value.formattedString,
       decoration: const InputDecoration(
@@ -212,99 +213,24 @@ class _BodyState extends State<_Body> {
     );
   }
 
-  FormField<ComfortLevel> get _comfortLevelFormField {
-    return FormField<ComfortLevel>(
+  SimpleDialogFormField<ComfortLevel> get _comfortLevelFormField {
+    return SimpleDialogFormField<ComfortLevel>(
       initialValue: _comfortLevel,
+      values: ComfortLevel.values,
+      valueAsString: (value) => value.formattedString,
       validator: _formValidationManager.wrapValidator(
         '_comfortLevelFormField',
         (value) => DataValidator.required(value),
       ),
       onSaved: (value) => _comfortLevel = value,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      builder: (fieldState) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MaterialButton(
-            padding: const EdgeInsets.all(0),
-            onPressed: () async {
-              FocusManager.instance.primaryFocus?.unfocus();
-
-              /// if the user taps on the mask behind the dialog, then the
-              /// future below completes with the null value.
-              final selectedLevel = await showDialog<ComfortLevel>(
-                context: context,
-                builder: (_) => SimpleDialog(
-                  title: const Text('Select a level of comfort'),
-                  children: [
-                    SimpleDialogOption(
-                      onPressed: () =>
-                          Navigator.pop(context, ComfortLevel.unfurnished),
-                      child: Text(ComfortLevel.unfurnished.formattedString),
-                    ),
-                    SimpleDialogOption(
-                      onPressed: () =>
-                          Navigator.pop(context, ComfortLevel.semiFurnished),
-                      child: Text(ComfortLevel.semiFurnished.formattedString),
-                    ),
-                    SimpleDialogOption(
-                      onPressed: () =>
-                          Navigator.pop(context, ComfortLevel.furnished),
-                      child: Text(ComfortLevel.furnished.formattedString),
-                    ),
-                  ],
-                ),
-              );
-              if (selectedLevel != null && selectedLevel != fieldState.value) {
-                fieldState.didChange(selectedLevel);
-                _informFormChange(selectedLevel);
-              }
-            },
-            child: AbsorbPointer(
-              child: Theme(
-                data: fieldState.hasError
-                    ? ThemeData().copyWith(
-                        colorScheme: ThemeData()
-                            .colorScheme
-                            .copyWith(primary: const Color(0xffd32f2f)),
-                        inputDecorationTheme: const InputDecorationTheme(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Color(0xffd32f2f)),
-                          ),
-                        ),
-                      )
-                    : Theme.of(fieldState.context),
-                child: TextField(
-                  focusNode: _formValidationManager
-                      .getFocusNodeForField('_comfortLevelFormField'),
-                  readOnly: true,
-                  showCursor: false,
-                  decoration: InputDecoration(
-                    filled: true,
-                    prefixIcon: const Icon(Icons.category_outlined),
-                    floatingLabelBehavior: (fieldState.value != null)
-                        ? FloatingLabelBehavior.always
-                        : null,
-                    labelText: "Comfort level",
-                    hintText: (fieldState.value != null)
-                        ? fieldState.value!.formattedString
-                        : null,
-                    hintStyle: const TextStyle(color: Color(0xdd000000)),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12, top: 8),
-            child: Text(
-              fieldState.errorText ?? '',
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(color: Theme.of(context).errorColor),
-            ),
-          ),
-        ],
+      onChanged: _informFormChange,
+      focusNode:
+          _formValidationManager.getFocusNodeForField('_comfortLevelFormField'),
+      title: const Text('Select a level of comfort'),
+      decoration: const InputDecoration(
+        filled: true,
+        prefixIcon: Icon(Icons.category_outlined),
+        labelText: "Comfort level",
       ),
     );
   }
