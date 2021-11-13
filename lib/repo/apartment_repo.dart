@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 
 class ApartmentRepo {
@@ -6,6 +7,7 @@ class ApartmentRepo {
 
   static Stream<QuerySnapshot<ApartmentModel>> list() {
     return _apartmentListRef
+        .where('creator_id', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .orderBy('created_at', descending: true)
         .snapshots();
   }

@@ -2,14 +2,50 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/repo/apartment_repo.dart';
 import 'package:rentalz/screens/apartment_detail/apartment_detail_screen.dart';
 import 'package:rentalz/screens/apartment_list/flow_menu.dart';
 
-class ApartmentListScreen extends StatelessWidget {
+class ApartmentListScreen extends StatefulWidget {
   const ApartmentListScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ApartmentListScreen> createState() => _ApartmentListScreenState();
+}
+
+class _ApartmentListScreenState extends State<ApartmentListScreen> {
+  final _apartmentListStream = ApartmentRepo.list();
+
+  Widget get _mainContent {
+    return Center(
+      child: StreamBuilder<QuerySnapshot<ApartmentModel>>(
+        stream: _apartmentListStream,
+        builder: (_, snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator.adaptive();
+          }
+
+          final apartments = snapshot.data?.docs ?? [];
+          if (apartments.isEmpty) {
+            return const Padding(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                "You haven't added any apartments, start adding one by tapping the navigation icon at the bottom right corner of the screen.",
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          return _SearchSection(apartments: apartments);
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +55,9 @@ class ApartmentListScreen extends StatelessWidget {
         drawer: const _SearchFilterDrawer(),
         body: SafeArea(
           child: Stack(
-            children: const [
-              _SearchSection(),
-              FlowMenu(),
+            children: [
+              _mainContent,
+              const FlowMenu(),
             ],
           ),
         ),
@@ -79,15 +115,26 @@ class _SearchFilterDrawerState extends State<_SearchFilterDrawer> {
 /// The search keyword is also used to find the apartments with reporters
 /// whose names contain the keyword.
 class _SearchSection extends StatefulWidget {
-  const _SearchSection({Key? key}) : super(key: key);
+  const _SearchSection({
+    Key? key,
+    required this.apartments,
+  }) : super(key: key);
+
+  final List<QueryDocumentSnapshot<ApartmentModel>> apartments;
 
   @override
   _SearchSectionState createState() => _SearchSectionState();
 }
 
 class _SearchSectionState extends State<_SearchSection> {
-  final _apartmentListStream = ApartmentRepo.list();
   final _fsabController = FloatingSearchBarController();
+  List<QueryDocumentSnapshot<ApartmentModel>> apartmentListToShow = [];
+
+  @override
+  void initState() {
+    super.initState();
+    apartmentListToShow = widget.apartments;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,27 +176,31 @@ class _SearchSectionState extends State<_SearchSection> {
       ],
       hint: 'Name of property or reporter...',
       onQueryChanged: (query) {},
-      body: Center(
-        child: StreamBuilder<QuerySnapshot<ApartmentModel>>(
-          stream: _apartmentListStream,
-          builder: (_, snapshot) {
-            if (snapshot.hasError) return const Text('Something went wrong');
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator.adaptive();
-            }
-
-            final apartmentList = snapshot.data?.docs ?? [];
-            if (apartmentList.isEmpty) {
-              return const Text('No apartments are found.');
-            }
-            return Scrollbar(
-              child: _ApartmentListView(apartmentList: apartmentList),
-            );
-          },
-        ),
+      body: Scrollbar(
+        child: _ApartmentListView(apartmentList: apartmentListToShow),
       ),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant _SearchSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    /// StreamBuilder() will rebuild _SearchSection if the widget.apartmentList
+    /// data is changed in real-time, if this happen everything is reset...
+    apartmentListToShow = widget.apartments;
+    _fsabController.clear();
+    _fsabController.hide();
+    _fsabController.close();
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) => AlertService.showEphemeralSnackBar('Your data is updated'),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _fsabController.dispose();
   }
 }
 
@@ -164,19 +215,11 @@ class _ApartmentListView extends StatelessWidget {
   RichText _formattedAddressText(String formattedAddress) {
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          color: Theme.of(NavigationService.navigatorKey.currentContext!)
-              .hintColor,
-        ),
+        style: TextStyle(color: _hintColor),
         children: [
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: Icon(
-              Icons.map_outlined,
-              size: 16,
-              color: Theme.of(NavigationService.navigatorKey.currentContext!)
-                  .hintColor,
-            ),
+            child: Icon(Icons.map_outlined, size: 16, color: _hintColor),
           ),
           TextSpan(text: formattedAddress),
         ],
@@ -189,19 +232,11 @@ class _ApartmentListView extends StatelessWidget {
   RichText _apartmentTypeText(ApartmentType type) {
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          color: Theme.of(NavigationService.navigatorKey.currentContext!)
-              .primaryColor,
-        ),
+        style: TextStyle(color: _hintColor),
         children: [
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: Icon(
-              Icons.house_outlined,
-              size: 16,
-              color: Theme.of(NavigationService.navigatorKey.currentContext!)
-                  .primaryColor,
-            ),
+            child: Icon(Icons.house_outlined, size: 16, color: _hintColor),
           ),
           TextSpan(text: type.formattedString),
         ],
@@ -212,10 +247,7 @@ class _ApartmentListView extends StatelessWidget {
   RichText _nBedroomsText(int nBedrooms) {
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          color: Theme.of(NavigationService.navigatorKey.currentContext!)
-              .hintColor,
-        ),
+        style: TextStyle(color: _hintColor),
         children: [
           const WidgetSpan(
             alignment: PlaceholderAlignment.middle,
@@ -230,10 +262,7 @@ class _ApartmentListView extends StatelessWidget {
   RichText _monthlyRentText(int monthlyRent) {
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          color: Theme.of(NavigationService.navigatorKey.currentContext!)
-              .hintColor,
-        ),
+        style: TextStyle(color: _hintColor),
         children: [
           const WidgetSpan(
             alignment: PlaceholderAlignment.middle,
@@ -297,3 +326,6 @@ class _ApartmentListView extends StatelessWidget {
     );
   }
 }
+
+final _hintColor =
+    Theme.of(NavigationService.navigatorKey.currentContext!).hintColor;
