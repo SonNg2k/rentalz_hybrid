@@ -8,6 +8,7 @@ import 'package:rentalz/alert_service.dart';
 import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/repo/apartment_repo.dart';
+import 'package:rentalz/screens/save_apartment/data_summary.dart';
 import 'package:rentalz/screens/save_apartment/input_location_address_screen.dart';
 import 'package:rentalz/utils/data_validator.dart';
 import 'package:rentalz/utils/dvhcvn/dvhcvn_data.dart';
@@ -309,8 +310,6 @@ class _BodyState extends State<_Body> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
           final location = _locationAddress!;
-
-          /// TODO add confirmation dialog
           final data = ApartmentModel(
             name: _name!,
             sanitizedName: _name!.toLowerCaseWithNoDiacriticsAndSpaces(),
@@ -332,6 +331,11 @@ class _BodyState extends State<_Body> {
             creatorId: FirebaseAuth.instance.currentUser!.uid,
             createdAt: widget.initialData?.createdAt ?? Timestamp.now(),
           );
+          final isConfirmed = await AlertService.showConfirmationDialog(
+            title: const Text('Here is a summary of your data'),
+            content: DataSummary(data: data),
+          );
+          if (!isConfirmed) return;
           final asyncTask = (widget.apartmentId != null)
               ? ApartmentRepo.update(widget.apartmentId!, data: data)
               : ApartmentRepo.add(data);

@@ -71,6 +71,7 @@ class AlertService {
           ),
         ),
         child: AlertDialog(
+          scrollable: true,
           title: title,
           content: content,
           actions: [
@@ -88,6 +89,7 @@ class AlertService {
         ),
       ),
     );
+    FocusManager.instance.primaryFocus?.unfocus();
     return result ?? false;
   }
 }
