@@ -10,6 +10,8 @@ import 'package:rentalz/screens/apartment_detail/apartment_detail_screen.dart';
 import 'package:rentalz/screens/apartment_list/flow_menu.dart';
 import 'package:rentalz/utils/my_string_extension.dart';
 
+import 'filter_option_list_drawer.dart';
+
 class ApartmentListScreen extends StatefulWidget {
   const ApartmentListScreen({Key? key}) : super(key: key);
 
@@ -42,7 +44,7 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
               ),
             );
           }
-          return _SearchSection(apartments: apartments);
+          return _SearchAndShowResultSection(apartments: apartments);
         },
       ),
     );
@@ -53,7 +55,7 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        drawer: const _SearchFilterDrawer(),
+        drawer: const FilterOptionListDrawer(),
         body: SafeArea(
           child: Stack(
             children: [
@@ -67,56 +69,11 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
   }
 }
 
-class _SearchFilterDrawer extends StatefulWidget {
-  const _SearchFilterDrawer({Key? key}) : super(key: key);
-
-  @override
-  State<_SearchFilterDrawer> createState() => _SearchFilterDrawerState();
-}
-
-class _SearchFilterDrawerState extends State<_SearchFilterDrawer> {
-  Widget get _apartmentTypeOptions {
-    return Column(
-      children: [
-        Text(
-          'Apartment types',
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    /// "A Drawer can contain any widget u like, but it's common to use a
-    /// ListView with a DrawerHeader and ListTiles, which allows the user to
-    /// scroll through the items" (from Flutter API Ref about the Drawer class).
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            decoration:
-                BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-            child: Text(
-              'Search Filter',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .copyWith(color: Colors.white, fontSize: 24),
-            ),
-          ),
-          _apartmentTypeOptions,
-        ],
-      ),
-    );
-  }
-}
-
 /// Find the apartments whose names contain the search by address/apartment name....
 /// The search by address/apartment name... is also used to find the apartments with reporters
 /// whose names contain the keyword.
-class _SearchSection extends StatefulWidget {
-  const _SearchSection({
+class _SearchAndShowResultSection extends StatefulWidget {
+  const _SearchAndShowResultSection({
     Key? key,
     required this.apartments,
   }) : super(key: key);
@@ -127,7 +84,7 @@ class _SearchSection extends StatefulWidget {
   _SearchSectionState createState() => _SearchSectionState();
 }
 
-class _SearchSectionState extends State<_SearchSection> {
+class _SearchSectionState extends State<_SearchAndShowResultSection> {
   final _fsabController = FloatingSearchBarController();
   List<QueryDocumentSnapshot<ApartmentModel>> _apartmentListToShow = [];
 
@@ -201,7 +158,7 @@ class _SearchSectionState extends State<_SearchSection> {
   }
 
   @override
-  void didUpdateWidget(covariant _SearchSection oldWidget) {
+  void didUpdateWidget(covariant _SearchAndShowResultSection oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     /// When the widget.apartmentList is updated in real-time due to
