@@ -96,8 +96,8 @@ class ClearableTextFormField extends FormField<String> {
           enabled: enabled ?? true,
           autovalidateMode: autovalidateMode,
           builder: (FormFieldState<String> field) {
-            final _ClearableTextFormFieldState state =
-                field as _ClearableTextFormFieldState;
+            final ClearableTextFormFieldState state =
+                field as ClearableTextFormFieldState;
             final InputDecoration effectiveDecoration = decoration
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             void onChangedHandler(String value) {
@@ -190,10 +190,10 @@ class ClearableTextFormField extends FormField<String> {
   final Icon resetIcon;
 
   @override
-  _ClearableTextFormFieldState createState() => _ClearableTextFormFieldState();
+  ClearableTextFormFieldState createState() => ClearableTextFormFieldState();
 }
 
-class _ClearableTextFormFieldState extends FormFieldState<String> {
+class ClearableTextFormFieldState extends FormFieldState<String> {
   TextEditingController? _controller;
   bool hasFocus = false;
 

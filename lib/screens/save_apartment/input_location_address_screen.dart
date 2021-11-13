@@ -27,6 +27,7 @@ class _InputLocationAddressScreenState
       GlobalKey<CupertinoPickerFormFieldState<Level2>>();
   final _townOrWardOrCommuneFieldKey =
       GlobalKey<CupertinoPickerFormFieldState<Level3>>();
+  final _routeFieldKey = GlobalKey<ClearableTextFormFieldState>();
   Level1? _level1;
   Level2? _level2;
   Level3? _level3;
@@ -51,8 +52,10 @@ class _InputLocationAddressScreenState
           _level1 = value;
           _level2 = null;
           _level3 = null;
+          _route = null;
           _cityOrDistrictFieldKey.currentState?.clear();
           _townOrWardOrCommuneFieldKey.currentState?.clear();
+          _routeFieldKey.currentState?.clear();
         }
       }),
     );
@@ -76,7 +79,9 @@ class _InputLocationAddressScreenState
         if (value != _level2) {
           _level2 = value;
           _level3 = null;
+          _route = null;
           _townOrWardOrCommuneFieldKey.currentState?.clear();
+          _routeFieldKey.currentState?.clear();
         }
       }),
     );
@@ -89,7 +94,13 @@ class _InputLocationAddressScreenState
     return CupertinoPickerFormField<Level3>(
       key: _townOrWardOrCommuneFieldKey,
       initialValue: _level3,
-      onSaved: (value) => _level3 = value,
+      onPickerClose: (value) {
+        if (value != _level3) {
+          _level3 = value;
+          _route = null;
+          _routeFieldKey.currentState?.clear();
+        }
+      },
       values: sortedLevel3s,
       valueAsString: (value) => value.name,
       decoration: _inputDecoration.copyWith(
@@ -101,6 +112,7 @@ class _InputLocationAddressScreenState
 
   ClearableTextFormField get _routeFormField {
     return ClearableTextFormField(
+      key: _routeFieldKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: _route,
       validator: (value) =>
