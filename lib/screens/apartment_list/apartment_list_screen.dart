@@ -224,9 +224,9 @@ class _ApartmentListView extends StatelessWidget {
       text: TextSpan(
         style: TextStyle(color: _hintColor),
         children: [
-          const WidgetSpan(
+          WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: Icon(Icons.bed, size: 16),
+            child: Icon(Icons.bed, size: 16, color: _hintColor),
           ),
           TextSpan(text: nBedrooms.toString()),
         ],
@@ -239,9 +239,10 @@ class _ApartmentListView extends StatelessWidget {
       text: TextSpan(
         style: TextStyle(color: _hintColor),
         children: [
-          const WidgetSpan(
+          WidgetSpan(
             alignment: PlaceholderAlignment.middle,
-            child: Icon(Icons.attach_money_outlined, size: 16),
+            child:
+                Icon(Icons.attach_money_outlined, size: 16, color: _hintColor),
           ),
           TextSpan(
             text: '${NumberFormat("#,###").format(monthlyRent)}/mo',
@@ -273,26 +274,33 @@ class _ApartmentListView extends StatelessWidget {
                     apartmentRef: apartmentList[index].reference),
               );
             },
-            child: ListTile(
-              horizontalTitleGap: 0,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-              isThreeLine: true,
-              title: Text(
-                data.name,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              subtitle: _formattedAddressText(data.formattedAddress),
-              trailing: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _apartmentTypeText(data.type),
-                  const SizedBox(height: 4),
-                  _nBedroomsText(data.nBedrooms),
-                  const SizedBox(height: 4),
-                  _monthlyRentText(data.monthlyRent),
-                ],
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListTile(
+                    horizontalTitleGap: 0,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    isThreeLine: true,
+                    title: Text(
+                      data.name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    subtitle: _formattedAddressText(data.formattedAddress),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _apartmentTypeText(data.type),
+                    const SizedBox(height: 4),
+                    _nBedroomsText(data.nBedrooms),
+                    const SizedBox(height: 4),
+                    _monthlyRentText(data.monthlyRent),
+                  ],
+                ),
+                const SizedBox(width: 8),
+              ],
             ),
           ),
         );
