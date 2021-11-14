@@ -5,14 +5,14 @@ import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
-class FilterResultsDrawer extends StatefulWidget {
-  const FilterResultsDrawer({Key? key}) : super(key: key);
+class FilterSettingsDrawer extends StatefulWidget {
+  const FilterSettingsDrawer({Key? key}) : super(key: key);
 
   @override
-  State<FilterResultsDrawer> createState() => _FilterResultsDrawerState();
+  State<FilterSettingsDrawer> createState() => _FilterSettingsDrawerState();
 }
 
-class _FilterResultsDrawerState extends State<FilterResultsDrawer> {
+class _FilterSettingsDrawerState extends State<FilterSettingsDrawer> {
   final _comfortLevelFilterKey = GlobalKey<_ComfortLevelFilterState>();
   final _apartmentTypeFilterKey = GlobalKey<_ApartmentTypeFilterState>();
   final _monthlyRentPriceRangeFilterKey =

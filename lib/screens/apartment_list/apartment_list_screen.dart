@@ -10,7 +10,7 @@ import 'package:rentalz/screens/apartment_detail/apartment_detail_screen.dart';
 import 'package:rentalz/screens/apartment_list/flow_menu.dart';
 import 'package:rentalz/utils/my_string_extension.dart';
 
-import 'filter_results_drawer.dart';
+import 'filter_settings_drawer.dart';
 
 class ApartmentListScreen extends StatefulWidget {
   const ApartmentListScreen({Key? key}) : super(key: key);
@@ -55,7 +55,7 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        drawer: const FilterResultsDrawer(),
+        drawer: const FilterSettingsDrawer(),
         body: SafeArea(
           child: Stack(
             children: [
