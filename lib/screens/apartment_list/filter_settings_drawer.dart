@@ -78,11 +78,11 @@ class _FilterSettingsDrawerState extends State<FilterSettingsDrawer> {
               children: [
                 OutlinedButton(
                   onPressed: () {
-                    _comfortLevelFilterKey.currentState!.reset();
-                    _apartmentTypeFilterKey.currentState!.reset();
-                    _monthlyRentPriceRangeFilterKey.currentState!.reset();
+                    _comfortLevelFilterKey.currentState!.clear();
+                    _apartmentTypeFilterKey.currentState!.clear();
+                    _monthlyRentPriceRangeFilterKey.currentState!.clear();
                   },
-                  child: const Text('Reset'),
+                  child: const Text('Clear'),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(onPressed: () {}, child: const Text('Apply')),
@@ -105,7 +105,7 @@ class _ComfortLevelFilter extends StatefulWidget {
 class _ComfortLevelFilterState extends State<_ComfortLevelFilter> {
   ComfortLevel? _selectedLevel;
 
-  void reset() {
+  void clear() {
     setState(() => _selectedLevel = null);
   }
 
@@ -141,7 +141,7 @@ class _ApartmentTypeFilter extends StatefulWidget {
 class _ApartmentTypeFilterState extends State<_ApartmentTypeFilter> {
   final List<ApartmentType> _filters = <ApartmentType>[];
 
-  void reset() {
+  void clear() {
     setState(() => _filters.clear());
   }
 
@@ -191,7 +191,7 @@ class _MonthlyRentPriceRangeFilterState
   final _minInputController = TextEditingController();
   final _maxInputController = TextEditingController();
 
-  void reset() {
+  void clear() {
     _minInputController.clear();
     _maxInputController.clear();
   }
