@@ -5,25 +5,32 @@ import 'package:rentalz/models/apartment/apartment_model.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/widgets/input_formatters/numeric_text_input_formatter.dart';
 
-class FilterResultsDrawer extends StatelessWidget {
+class FilterResultsDrawer extends StatefulWidget {
   const FilterResultsDrawer({Key? key}) : super(key: key);
 
+  @override
+  State<FilterResultsDrawer> createState() => _FilterResultsDrawerState();
+}
+
+class _FilterResultsDrawerState extends State<FilterResultsDrawer> {
+  final _comfortLevelFilterKey = GlobalKey<_ComfortLevelFilterState>();
+  final _apartmentTypeFilterKey = GlobalKey<_ApartmentTypeFilterState>();
+  final _monthlyRentPriceRangeFilterKey =
+      GlobalKey<_MonthlyRentPriceRangeFilterState>();
+
   Column get _filterSettingsScrollView {
-    final filterSubjectTextStyle =
-        Theme.of(NavigationService.navigatorKey.currentContext!)
-            .textTheme
-            .bodyText1;
+    final filterSubjectTextStyle = Theme.of(context).textTheme.bodyText1;
     return Column(
       children: [
         Text('Choose a comfort level', style: filterSubjectTextStyle),
-        const _ComfortLevelFilter(),
+        _ComfortLevelFilter(key: _comfortLevelFilterKey),
         const SizedBox(height: 16),
         Text('Choose up to 10 apartment types', style: filterSubjectTextStyle),
-        const _ApartmentTypeFilter(),
+        _ApartmentTypeFilter(key: _apartmentTypeFilterKey),
         const SizedBox(height: 16),
         Text('Monthly price range', style: filterSubjectTextStyle),
         const SizedBox(height: 8),
-        const _MonthlyRentPriceRangeFilter(),
+        _MonthlyRentPriceRangeFilter(key: _monthlyRentPriceRangeFilterKey),
       ],
     );
   }
@@ -69,7 +76,14 @@ class FilterResultsDrawer extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                OutlinedButton(onPressed: () {}, child: const Text('Reset')),
+                OutlinedButton(
+                  onPressed: () {
+                    _comfortLevelFilterKey.currentState!.reset();
+                    _apartmentTypeFilterKey.currentState!.reset();
+                    _monthlyRentPriceRangeFilterKey.currentState!.reset();
+                  },
+                  child: const Text('Reset'),
+                ),
                 const SizedBox(width: 16),
                 ElevatedButton(onPressed: () {}, child: const Text('Apply')),
               ],
@@ -90,6 +104,10 @@ class _ComfortLevelFilter extends StatefulWidget {
 
 class _ComfortLevelFilterState extends State<_ComfortLevelFilter> {
   ComfortLevel? _selectedLevel;
+
+  void reset() {
+    setState(() => _selectedLevel = null);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +140,10 @@ class _ApartmentTypeFilter extends StatefulWidget {
 
 class _ApartmentTypeFilterState extends State<_ApartmentTypeFilter> {
   final List<ApartmentType> _filters = <ApartmentType>[];
+
+  void reset() {
+    setState(() => _filters.clear());
+  }
 
   /// Generate values on-demand when someone tries to iterate over the iterator.
   Iterable<FilterChip> get _filterOptions sync* {
@@ -168,6 +190,11 @@ class _MonthlyRentPriceRangeFilterState
     extends State<_MonthlyRentPriceRangeFilter> {
   final _minInputController = TextEditingController();
   final _maxInputController = TextEditingController();
+
+  void reset() {
+    _minInputController.clear();
+    _maxInputController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
