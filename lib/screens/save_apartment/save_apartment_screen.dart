@@ -255,7 +255,7 @@ class _BodyState extends State<_Body> {
       ],
       decoration: _inputDecoration.copyWith(
         prefixIcon: const Icon(Icons.attach_money_outlined),
-        labelText: "Monthly rent price",
+        labelText: "Monthly rental price",
       ),
     );
   }
