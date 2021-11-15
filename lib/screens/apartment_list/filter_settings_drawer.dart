@@ -15,8 +15,8 @@ class FilterSettingsDrawer extends StatefulWidget {
 class _FilterSettingsDrawerState extends State<FilterSettingsDrawer> {
   final _comfortLevelFilterKey = GlobalKey<_ComfortLevelFilterState>();
   final _apartmentTypeFilterKey = GlobalKey<_ApartmentTypeFilterState>();
-  final _monthlyRentPriceRangeFilterKey =
-      GlobalKey<_MonthlyRentPriceRangeFilterState>();
+  final _monthlyRentalPriceRangeFilterKey =
+      GlobalKey<_MonthlyRentalPriceRangeFilterState>();
 
   Column get _filterSettingsScrollView {
     final filterSubjectTextStyle = Theme.of(context).textTheme.bodyText1;
@@ -28,9 +28,9 @@ class _FilterSettingsDrawerState extends State<FilterSettingsDrawer> {
         Text('Choose up to 10 apartment types', style: filterSubjectTextStyle),
         _ApartmentTypeFilter(key: _apartmentTypeFilterKey),
         const SizedBox(height: 16),
-        Text('Monthly price range', style: filterSubjectTextStyle),
+        Text('Monthly rental price range', style: filterSubjectTextStyle),
         const SizedBox(height: 8),
-        _MonthlyRentPriceRangeFilter(key: _monthlyRentPriceRangeFilterKey),
+        _MonthlyRentalPriceRangeFilter(key: _monthlyRentalPriceRangeFilterKey),
       ],
     );
   }
@@ -80,7 +80,7 @@ class _FilterSettingsDrawerState extends State<FilterSettingsDrawer> {
                   onPressed: () {
                     _comfortLevelFilterKey.currentState!.clear();
                     _apartmentTypeFilterKey.currentState!.clear();
-                    _monthlyRentPriceRangeFilterKey.currentState!.clear();
+                    _monthlyRentalPriceRangeFilterKey.currentState!.clear();
                   },
                   child: const Text('Clear'),
                 ),
@@ -178,16 +178,16 @@ class _ApartmentTypeFilterState extends State<_ApartmentTypeFilter> {
   }
 }
 
-class _MonthlyRentPriceRangeFilter extends StatefulWidget {
-  const _MonthlyRentPriceRangeFilter({Key? key}) : super(key: key);
+class _MonthlyRentalPriceRangeFilter extends StatefulWidget {
+  const _MonthlyRentalPriceRangeFilter({Key? key}) : super(key: key);
 
   @override
-  State<_MonthlyRentPriceRangeFilter> createState() =>
-      _MonthlyRentPriceRangeFilterState();
+  State<_MonthlyRentalPriceRangeFilter> createState() =>
+      _MonthlyRentalPriceRangeFilterState();
 }
 
-class _MonthlyRentPriceRangeFilterState
-    extends State<_MonthlyRentPriceRangeFilter> {
+class _MonthlyRentalPriceRangeFilterState
+    extends State<_MonthlyRentalPriceRangeFilter> {
   final _minInputController = TextEditingController();
   final _maxInputController = TextEditingController();
 
