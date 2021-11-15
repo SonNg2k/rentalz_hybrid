@@ -46,16 +46,10 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
           }
 
           final apartments = snapshot.data?.docs ?? [];
-          if (apartments.isEmpty) {
-            return const Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                "You haven't added any apartments, start adding one by tapping the navigation icon at the bottom right corner of the screen.",
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-          return _SearchAndShowResultSection(apartments: apartments);
+          return _SearchAndShowResultSection(
+            apartments: apartments,
+            filterIsNull: _filters.isEmpty,
+          );
         },
       ),
     );
@@ -85,15 +79,19 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
 }
 
 /// Find the apartments whose names contain the search by address/apartment name....
-/// The search by address/apartment name... is also used to find the apartments with reporters
-/// whose names contain the keyword.
+/// The search by address/apartment name... is also used to find the apartments
+/// with reporters whose names contain the keyword.
 class _SearchAndShowResultSection extends StatefulWidget {
   const _SearchAndShowResultSection({
     Key? key,
     required this.apartments,
+    required this.filterIsNull,
   }) : super(key: key);
 
   final List<QueryDocumentSnapshot<ApartmentModel>> apartments;
+
+  /// Highlight the filter icon button if filter exists.
+  final bool filterIsNull;
 
   @override
   _SearchAndShowResultSectionState createState() =>
@@ -105,15 +103,15 @@ class _SearchAndShowResultSectionState
   final _fsabController = FloatingSearchBarController();
   List<QueryDocumentSnapshot<ApartmentModel>> _apartmentListToShow = [];
 
-  void _handleQueryChange(String query) {
-    if (query.trim().isEmpty) {
+  void _findItemsRelevantToSearchTerm(String term) {
+    if (term.trim().isEmpty) {
       return setState(() => _apartmentListToShow = widget.apartments);
     }
     setState(
       () => _apartmentListToShow = widget.apartments.where((snapshot) {
         final data = snapshot.data();
-        return data.name.isRelevantTo(query) ||
-            data.formattedAddress.isRelevantTo(query);
+        return data.name.isRelevantTo(term) ||
+            data.formattedAddress.isRelevantTo(term);
       }).toList(),
     );
   }
@@ -157,19 +155,36 @@ class _SearchAndShowResultSectionState
       ),
       actions: [
         FloatingSearchBarAction.searchToClear(),
-        IconButton(
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          icon: const Icon(Icons.filter_alt_outlined),
+        Theme(
+          data: ThemeData(
+            iconTheme: (widget.filterIsNull)
+                ? Theme.of(context).iconTheme
+                : IconThemeData(color: Theme.of(context).colorScheme.secondary),
+          ),
+          child: Stack(
+            children: [
+              IconButton(
+                onPressed: () => Scaffold.of(context).openDrawer(),
+                icon: const Icon(Icons.filter_alt_outlined),
+              ),
+              if (!widget.filterIsNull)
+                const Positioned(
+                  top: 8,
+                  right: 0,
+                  child: Icon(Icons.check_circle, size: 16),
+                )
+            ],
+          ),
         ),
       ],
       hint: 'Search by name or address...',
-      onQueryChanged: _handleQueryChange,
+      onQueryChanged: _findItemsRelevantToSearchTerm,
       body: (_apartmentListToShow.isNotEmpty)
           ? Scrollbar(
               child: _ApartmentListView(apartmentList: _apartmentListToShow),
             )
           : const Center(
-              child: Text('No results found 🤣.', textAlign: TextAlign.left),
+              child: Text('No apartments found 🤣.', textAlign: TextAlign.left),
             ),
     );
   }
@@ -184,7 +199,7 @@ class _SearchAndShowResultSectionState
 
     /// New list detected, pick the apartment items relevant to the search
     /// keyword...
-    _handleQueryChange(_fsabController.query);
+    _findItemsRelevantToSearchTerm(_fsabController.query);
   }
 
   @override
@@ -270,6 +285,7 @@ class _ApartmentListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      physics: const ClampingScrollPhysics(),
       itemCount: apartmentList.length,
       itemBuilder: (_, index) {
         final apartmentId = apartmentList[index].id;

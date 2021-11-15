@@ -307,6 +307,7 @@ class _MonthlyRentalPriceRangeFilterState
     if (maxText.isEmpty) maxText = '99,999';
     final minPrice = NumberFormat().parse(minText).toInt();
     final maxPrice = NumberFormat().parse(maxText).toInt();
+    if (minPrice >= maxPrice) return null;
     return PriceRange(min: minPrice, max: maxPrice);
   }
 
