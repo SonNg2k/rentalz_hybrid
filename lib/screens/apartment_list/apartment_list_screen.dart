@@ -20,14 +20,25 @@ class ApartmentListScreen extends StatefulWidget {
 }
 
 class _ApartmentListScreenState extends State<ApartmentListScreen> {
-  final _apartmentListStream = ApartmentRepo.list();
+  // TODO Sign out button ring bell and edit vibrate
+  final List<FilterOption> _filters = [];
+
+  void _updateFilter(List<FilterOption> options) {
+    _clearFilter();
+    setState(() => _filters.addAll(options));
+  }
+
+  void _clearFilter() {
+    setState(() => _filters.clear());
+  }
 
   Widget get _mainContent {
     return Center(
       child: StreamBuilder<QuerySnapshot<ApartmentModel>>(
-        stream: _apartmentListStream,
+        stream: ApartmentRepo.list(_filters),
         builder: (_, snapshot) {
           if (snapshot.hasError) {
+            debugPrint(snapshot.error.toString());
             return const Text('Something went wrong');
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -55,7 +66,11 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        drawer: const FilterSettingsDrawer(),
+        drawer: FilterSettingsDrawer(
+          filters: _filters,
+          onClear: _clearFilter,
+          onApply: _updateFilter,
+        ),
         body: SafeArea(
           child: Stack(
             children: [
