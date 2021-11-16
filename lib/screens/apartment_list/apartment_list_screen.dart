@@ -20,7 +20,6 @@ class ApartmentListScreen extends StatefulWidget {
 }
 
 class _ApartmentListScreenState extends State<ApartmentListScreen> {
-  // TODO Sign out button ring bell and edit vibrate
   final List<FilterOption> _filters = [];
 
   void _updateFilter(List<FilterOption> options) {

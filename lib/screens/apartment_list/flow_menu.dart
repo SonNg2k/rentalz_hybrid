@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/screens/save_apartment/save_apartment_screen.dart';
+import 'package:vibration/vibration.dart';
 
 class FlowMenu extends StatefulWidget {
   const FlowMenu({Key? key}) : super(key: key);
@@ -19,8 +20,8 @@ class _FlowMenuState extends State<FlowMenu>
   late AnimationController menuAnimation;
   bool isOpened = false;
 
-  Widget get flowMenuLogoutBtn {
-    return flowMenuButton(
+  Widget get _flowMenuLogoutBtn {
+    return _flowMenuButton(
       Icon(
         Icons.logout,
         color: Theme.of(context).errorColor,
@@ -47,7 +48,7 @@ class _FlowMenuState extends State<FlowMenu>
     );
   }
 
-  Widget flowMenuButton(Icon icon, {void Function()? onPressed}) {
+  Widget _flowMenuButton(Icon icon, {void Function()? onPressed}) {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
@@ -95,28 +96,32 @@ class _FlowMenuState extends State<FlowMenu>
     ///
     /// A widget that sizes and positions children efficiently, according to
     /// the logic in a FlowDelegate.
-    return Flow(
-      delegate: _FlowMenuDelegate(menuAnimation: menuAnimation),
-      children: [
-        flowMenuButton(Icon(
-          Icons.close,
+    return Theme(
+      data: ThemeData(
+        iconTheme: IconThemeData(
           color: Theme.of(context).colorScheme.secondary,
-        )),
-        flowMenuButton(
-          Icon(
-            Icons.add_business_outlined,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          onPressed: () =>
-              NavigationService.pushNewPage(const SaveApartmentScreen()),
         ),
-        if (isOpened) flowMenuLogoutBtn,
-        if (!isOpened)
-          flowMenuButton(Icon(
-            Icons.menu,
-            color: Theme.of(context).colorScheme.secondary,
-          ))
-      ],
+      ),
+      child: Flow(
+        delegate: _FlowMenuDelegate(menuAnimation: menuAnimation),
+        children: [
+          _flowMenuButton(const Icon(Icons.close)),
+          _flowMenuButton(
+            const Icon(Icons.add_business_outlined),
+            onPressed: () =>
+                NavigationService.pushNewPage(const SaveApartmentScreen()),
+          ),
+          _flowMenuButton(
+            const Icon(Icons.vibration),
+            onPressed: () => Vibration.vibrate(
+              duration: 10000,
+              amplitude: 255,
+            ),
+          ),
+          if (isOpened) _flowMenuLogoutBtn,
+          if (!isOpened) _flowMenuButton(const Icon(Icons.menu))
+        ],
+      ),
     );
   }
 
