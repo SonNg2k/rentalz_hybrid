@@ -4,6 +4,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:rentalz/navigation_service.dart';
 import 'package:rentalz/screens/save_apartment/save_apartment_screen.dart';
 import 'package:vibration/vibration.dart';
@@ -117,6 +118,22 @@ class _FlowMenuState extends State<FlowMenu>
               duration: 10000,
               amplitude: 255,
             ),
+          ),
+          _flowMenuButton(
+            const Icon(Icons.notifications_active_outlined),
+            onPressed: () {
+              FlutterRingtonePlayer.play(
+                android: AndroidSounds.alarm,
+                ios: IosSounds.electronic,
+                looping: true, // Android only - API >= 28
+                volume: 1, // Android only - API >= 28
+                asAlarm: true, // Android only - all APIs
+              );
+              Future.delayed(
+                const Duration(seconds: 5),
+                () => FlutterRingtonePlayer.stop(),
+              );
+            },
           ),
           if (isOpened) _flowMenuLogoutBtn,
           if (!isOpened) _flowMenuButton(const Icon(Icons.menu))
