@@ -123,14 +123,14 @@ class _FlowMenuState extends State<FlowMenu>
             const Icon(Icons.notifications_active_outlined),
             onPressed: () {
               FlutterRingtonePlayer.play(
-                android: AndroidSounds.alarm,
+                android: AndroidSounds.ringtone,
                 ios: IosSounds.electronic,
                 looping: true, // Android only - API >= 28
                 volume: 1, // Android only - API >= 28
                 asAlarm: true, // Android only - all APIs
               );
               Future.delayed(
-                const Duration(seconds: 5),
+                const Duration(seconds: 3),
                 () => FlutterRingtonePlayer.stop(),
               );
             },
